@@ -25,7 +25,7 @@ public class CustomerListScreen : Screen
 
         listPage.AddKey(ConsoleKey.F1, CreateNewCustomer);
         listPage.AddKey(ConsoleKey.F2, EditCustomer);
-        
+        listPage.AddKey(ConsoleKey.F5, RemoveCustomer);
 
         listPage.AddColumn("Kundenummer", nameof(Customer.CustomerId), 12);
         listPage.AddColumn("Navn", nameof(Customer.FullName), 30);
@@ -60,7 +60,12 @@ public class CustomerListScreen : Screen
     {
         Screen.Display(new CustomerEditScreen(customer));
     }
-
+    void RemoveCustomer(Customer customer)
+    {
+        Database.Instance.DeleteCustomerById(customer.CustomerId);
+        Console.Clear();
+        Draw();
+    }
   
 
 }
