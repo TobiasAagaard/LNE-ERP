@@ -1,0 +1,7 @@
+﻿CREATE TABLE Customers (
+	PersonId		INT				PRIMARY KEY,
+	CustomerId		INT				NOT NULL UNIQUE,
+	LastPurchaseAt	DATETIME2		NOT NULL,
+	FOREIGN KEY (PersonId) REFERENCES Persons(Id)
+		ON DELETE CASCADE
+);
