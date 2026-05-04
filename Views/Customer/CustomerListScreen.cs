@@ -23,11 +23,9 @@ public class CustomerListScreen : Screen
         Console.WriteLine("Tryk på F5 for at slette en eksisterende kunde");
         Console.WriteLine("");
 
-//TODO K5, K6, K7:
-        //listPage.AddKey(ConsoleKey.F1, CreateNewCustomer);
+        listPage.AddKey(ConsoleKey.F1, CreateNewCustomer);
         listPage.AddKey(ConsoleKey.F2, EditCustomer);
-        //listPage.AddKey(ConsoleKey.F5, DeleteCustomer);
-
+        listPage.AddKey(ConsoleKey.F5, RemoveCustomer);
 
         listPage.AddColumn("Kundenummer", nameof(Customer.CustomerId), 12);
         listPage.AddColumn("Navn", nameof(Customer.FullName), 30);
@@ -51,23 +49,23 @@ public class CustomerListScreen : Screen
         }
     }
 
-    //TODO K5, K6, K7:
-    //void CreateNewCustomer(Customer _)
-    //{
-    //    Customer customer = new Customer();
-    //    Screen.Display(new CustomerEditScreen(customer));
-    //}
+
+    void CreateNewCustomer(Customer _)
+    {
+        Customer customer = new Customer();
+        Screen.Display(new CustomerEditScreen(customer));
+    }
 
     void EditCustomer(Customer customer)
     {
         Screen.Display(new CustomerEditScreen(customer));
     }
-
-    //void DeleteCustomer(Customer customer)
-    //{
-    //    Database.Instance.DeleteCustomer(customer.Id);
-    //    Screen.Clear();
-    //    Draw();
-    //}
+    void RemoveCustomer(Customer customer)
+    {
+        Database.Instance.DeleteCustomerById(customer.CustomerId);
+        Console.Clear();
+        Draw();
+    }
+  
 
 }
