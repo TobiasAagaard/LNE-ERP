@@ -10,6 +10,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          path: ERP-CLI
+      - name: Checkout TECHCOOL fork
+        uses: actions/checkout@v4
+        with:
+          repository: TobiasAagaard/TECHCOOL
+          path: TECHCOOL
       - name: Setup .NET 10 (preview)
         uses: actions/setup-dotnet@v4
         with:
@@ -17,7 +24,10 @@ jobs:
           include-prerelease: true
       - name: Restore
         run: dotnet restore
+        working-directory: ERP-CLI
       - name: Build
         run: dotnet build --no-restore
+        working-directory: ERP-CLI
       - name: Test
         run: dotnet test --no-build --verbosity normal
+        working-directory: ERP-CLI

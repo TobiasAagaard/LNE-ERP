@@ -1,5 +1,6 @@
 using ErpCli.Models;
 
+
 namespace ErpCli.Data
 {
     public partial class Database
@@ -28,7 +29,7 @@ namespace ErpCli.Data
             for (int i = 0; i < SalesOrderHeaderCopy.Count; i++)
             {
                 SalesOrderHeader header = SalesOrderHeaderCopy[i];
-                header.customer = GetCustomerById(header.CustomerId); // Slår kunden op via CustomerId og tilknytter den, så FullName kan vises
+                header.customer = GetCustomerById(header.CustomerId); 
             }
             return SalesOrderHeaderCopy;
         }
@@ -57,6 +58,8 @@ namespace ErpCli.Data
                 }
             }
         }
+
+        
     }
     
 }

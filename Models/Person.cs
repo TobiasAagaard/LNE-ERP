@@ -6,6 +6,7 @@ namespace ErpCli.Models
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? FullName => $"{FirstName} {LastName}";
+        public override string ToString() => FullName ?? "";
         public string? Phone { get; set; }
         public string? Email { get; set; }
 

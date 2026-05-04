@@ -26,16 +26,41 @@ namespace ErpCli.Views
         {
             ExitOnEscape();
 
-            Customer? customer;
-            if (Database.Instance.GetCustomerById(salesOrderHeader.CustomerId) != null)
+            Form<SalesOrderHeader> form = new();
+
+            form.SearchBox("Kunde", nameof(salesOrderHeader.customer), term =>
+                Database.Instance.GetAllCustomers()
+                    .Where(c =>
+                        (c.FullName ?? "").Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                        (c.Email ?? "").Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                        (c.CustomerId.ToString().Contains(term)) ||
+                        (c.Phone ?? "").Contains(term, StringComparison.OrdinalIgnoreCase))
+                    .Select(c => ($"{c.CustomerId} {c.FullName}", (object)c))
+                    .ToList());
+            form.SelectBox("Status", nameof(salesOrderHeader.Status));
+            foreach (var s in Enum.GetValues<SalesOrderHeader.OrderStatus>())
             {
-                customer = Database.Instance.GetCustomerById(salesOrderHeader.CustomerId);
+                form.AddOption("Status", s.ToString(), s);
+            }
+
+            if (form.Edit(salesOrderHeader))
+            {
+                salesOrderHeader.CustomerId = salesOrderHeader.customer?.CustomerId ?? 0;
+
+                if (salesOrderHeader.OrderNumber != 0)
+                {
+                    Database.Instance.UpdateSalesOrderHeader(salesOrderHeader);
+                }
+                else
+                {
+                    Database.Instance.AddSalesOrderHeader(salesOrderHeader);
+                }
+                Console.WriteLine("Ændringerne blev gemt");
             }
             else
             {
-                customer = new();
+                Console.WriteLine("Ingen ændringer");
             }
-            
         }
     }
 }

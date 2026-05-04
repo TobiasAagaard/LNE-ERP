@@ -4,25 +4,36 @@ A command-line ERP (Enterprise Resource Planning) system built in C# / .NET 10 f
  
 The application is designed as a foundation that can be extended to other industries, so the architecture is kept clean and modular to support multiple developers working in parallel and several future versions of the product.
 
-## About LNE Security
- 
-LNE Security is a B2B IT-services company with 350 employees and departments in Aalborg, Odense, Nordborg, and Esbjerg. Besides hosting IT services, they sell software licenses and IT hardware from a central warehouse in Odense. The ERP system supports their core business processes.
-
 ## Getting Started
- 
+
 ### Prerequisites
- 
+
 - [.NET 10 SDK (preview)](https://dotnet.microsoft.com/download/dotnet/10.0)
+- A local clone of our fork of [TECHCOOL](https://github.com/TobiasAagaard/TECHCOOL). The project references the fork as a sibling folder rather than the TECHCOOL NuGet package, so cloning is required for the full experience and all features to work.
 
-### Build and run 
-Clone the repository, navigate to the project folder, and run the following commands in your terminal:
+### Build and run
 
-```bash
-dotnet build
-dotnet run
-```
+1. Create a parent folder to hold both repositories side by side:
 
-The app starts in the main menu. Use the arrow keys to navigate, Enter to select, Escape to go back, and the F-keys shown on each screen for actions (F1 / F2 / F3 / F5 for create / edit / new / delete depending on the screen).
+   ```
+   Projects/
+     TECHCOOL/
+     ERP-CLI/
+   ```
+
+2. Clone both repositories into that folder:
+
+   ```bash
+   git clone https://github.com/TobiasAagaard/TECHCOOL.git
+   git clone https://github.com/TobiasAagaard/ERP-CLI ERP-CLI
+   ```
+
+3. From inside `ERP-CLI/`, build and run:
+
+   ```bash
+   dotnet build
+   dotnet run
+   ```
 
 ## Tests
 
