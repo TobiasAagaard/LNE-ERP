@@ -69,7 +69,7 @@ We work in small increments using GitHub issues, feature branches, and pull requ
 | `K` | Customer (Kunde) | K1 Customer database methods, K2 Customer list screen, K3 Customer details screen, K4 Edit customer screen, K5 F2 edit customer, K6 F2 create customer, K7 F5 delete customer |
 | `S` | Sales orders (Salg) | S1 Sales order database methods, S2 Sales order list screen, S3 Sales order details screen, S4 Create/edit sales order screen, S5 F2 edit sales order, S6 F2 create new sales order, S7 F5 delete sales order |
 | `B` | Database | B1 Partial Database class with Company methods, B2 Product table SQL script, B3 Address table SQL script, B4 Person table SQL script, B5 Customer table SQL script, B6 Sales order header table SQL script, B7 Sales order table SQL script, B8 SQL Server connection handling |
-| `X` | Extra / cross-cutting | X1 Invoice export HTML/CSS, X2 Unit tests for basic classes, X3 Purchase and sales orders, X4 Inventory management (effectuate orders) |
+| `X` | Extra | X1 Invoice export HTML/CSS, X2 Unit tests for basic classes, X3 Purchase and sales orders, X4 Inventory management (effectuate orders) |
 
 
 
