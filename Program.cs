@@ -1,6 +1,7 @@
 using TECHCOOL.UI;
 using ErpCli.Views;
 using System.Data.SqlClient;
+using System.Data.Entity;
 
 namespace ErpCli
 {

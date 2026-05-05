@@ -28,7 +28,22 @@ The application is designed as a foundation that can be extended to other indust
    git clone https://github.com/TobiasAagaard/ERP-CLI ERP-CLI
    ```
 
-3. From inside `ERP-CLI/`, build and run:
+3. Create an `appsettings.Local.json` file in the root of `ERP-CLI/` with your database connection details:
+
+   ```json
+   {
+     "Database": {
+       "DataSource": "<server>",
+       "UserId": "<user>",
+       "Password": "<password>",
+       "InitialCatalog": "<database>"
+     }
+   }
+   ```
+
+   This file is git-ignored so each developer can keep their own local credentials.
+
+4. From inside `ERP-CLI/`, build and run:
 
    ```bash
    dotnet build
