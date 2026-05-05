@@ -20,7 +20,11 @@ namespace ErpCli.Views
             ExitOnEscape();
             Customer? customer = Database.Instance.GetCustomerById(header.CustomerId);
 
-            Console.WriteLine("Tryk F2 for at redigere");
+            Console.WriteLine("Tryk F2 for at rediger ordrehovedet");
+            Console.WriteLine("Tryk F3 for at redigere en ordrelinje");
+            Console.WriteLine("Tryk F4 for at oprette en ny ordrelinje");
+            Console.WriteLine("Tryk F5 for at slette en ordrelinje");
+
             AddKey(ConsoleKey.F2, () => {
                 Screen.Display(new SalesEditScreen(header));
             });
@@ -35,14 +39,10 @@ namespace ErpCli.Views
             
             Console.WriteLine();
             
-            listPage.AddKey(ConsoleKey.F2, EditOrderLine);
-            Console.WriteLine("Tryk F2 for at redigere en ordrelinje");
-
-            listPage.AddKey(ConsoleKey.F3, CreateNewOrderLine);
-            Console.WriteLine("Tryk F3 for at oprette en ny ordrelinje");
-
+            listPage.AddKey(ConsoleKey.F3, EditOrderLine);
+            listPage.AddKey(ConsoleKey.F4, CreateNewOrderLine);
             listPage.AddKey(ConsoleKey.F5, RemoveOrderLine);
-            Console.WriteLine("Tryk F5 for at slette en ordrelinje");
+            
 
             Console.WriteLine();
             
