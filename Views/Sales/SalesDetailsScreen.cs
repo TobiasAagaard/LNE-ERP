@@ -7,28 +7,79 @@ namespace ErpCli.Views
     public class SalesDetailsScreen : Screen
     {
         public override string Title { get; set; } = "Salgsordredetaljer";
-        SalesOrderHeader salesOrderHeader = new();
+        SalesOrderHeader header = new();
 
         public SalesDetailsScreen(SalesOrderHeader salesOrderHeader)
         {
             Title = "Detaljer for " + salesOrderHeader.OrderNumber;
-            this.salesOrderHeader = salesOrderHeader;
+            header = salesOrderHeader;
         }
 
         protected override void Draw()
         {
             ExitOnEscape();
-            Customer? customer = Database.Instance.GetCustomerById(salesOrderHeader.CustomerId);
-
-            Console.WriteLine($"Ordrenummer: {salesOrderHeader.OrderNumber}");
-            Console.WriteLine($"Dato: {salesOrderHeader.OrderCreatedAt}");
-            Console.WriteLine($"Kundenummer: {salesOrderHeader.CustomerId}");
-            Console.WriteLine($"Navn: {customer?.FirstName} {customer?.LastName}");
+            Customer? customer = Database.Instance.GetCustomerById(header.CustomerId);
 
             Console.WriteLine("Tryk F2 for at redigere");
             AddKey(ConsoleKey.F2, () => {
-                Screen.Display(new SalesEditScreen(salesOrderHeader));
+                Screen.Display(new SalesEditScreen(header));
             });
+            Console.WriteLine();
+
+            Console.WriteLine($"Ordrenummer: {header.OrderNumber}");
+            Console.WriteLine($"Dato: {header.OrderCreatedAt}");
+            Console.WriteLine($"Kundenummer: {header.CustomerId}");
+            Console.WriteLine($"Navn: {customer?.FirstName} {customer?.LastName}");
+
+            ListPage<OrderLine> listPage = new();
+            
+            Console.WriteLine();
+            
+            listPage.AddKey(ConsoleKey.F2, EditOrderLine);
+            Console.WriteLine("Tryk F2 for at redigere en ordrelinje");
+
+            listPage.AddKey(ConsoleKey.F3, CreateNewOrderLine);
+            Console.WriteLine("Tryk F3 for at oprette en ny ordrelinje");
+
+            listPage.AddKey(ConsoleKey.F5, RemoveOrderLine);
+            Console.WriteLine("Tryk F5 for at slette en ordrelinje");
+
+            Console.WriteLine();
+            
+            listPage.AddColumn("Produkt", nameof(OrderLine.Name), 20);
+            listPage.AddColumn("Antal", nameof(OrderLine.Quantity));
+
+
+            List<OrderLine> orderLineList = Database.Instance.GetAllOrderLine(header.OrderLineIdList);
+            foreach (OrderLine model in orderLineList)
+            {
+                listPage.Add(model);
+            }
+
+            OrderLine SelectedOrderLine = listPage.Select();
+            if (SelectedOrderLine != null) 
+            {
+                Display(new OrderLineEditScreen(SelectedOrderLine, header.OrderNumber));
+            }
+            else
+            {
+                Quit();
+            }
+        }
+        void CreateNewOrderLine(OrderLine _)
+        {
+            OrderLine new_OrderLine = new();
+            Screen.Display(new OrderLineEditScreen(new_OrderLine, header.OrderNumber));
+        }
+        void EditOrderLine(OrderLine orderLine) 
+        {
+            Screen.Display(new OrderLineEditScreen(orderLine, header.OrderNumber));
+        }
+        void RemoveOrderLine(OrderLine orderLine) 
+        {
+            Database.Instance.DeleteOrderLine(orderLine.Id);
+            Screen.Clear();
+            Draw();
         }
     }
 }
