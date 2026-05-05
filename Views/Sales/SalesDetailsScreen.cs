@@ -40,11 +40,7 @@ namespace ErpCli.Views
             Console.WriteLine();
             
             listPage.AddKey(ConsoleKey.F3, EditOrderLine);
-            
-
             listPage.AddKey(ConsoleKey.F4, CreateNewOrderLine);
-            
-
             listPage.AddKey(ConsoleKey.F5, RemoveOrderLine);
             
 
