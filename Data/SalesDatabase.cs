@@ -1,20 +1,25 @@
 using ErpCli.Models;
 
+
 namespace ErpCli.Data
 {
     public partial class Database
     {
         List<SalesOrderHeader> SalesOrderHeaderList = new List<SalesOrderHeader>()
         {
-            new SalesOrderHeader { OrderNumber = 1, OrderCreatedAt = new DateTime(2025, 12, 05), OrderCompletedAt = new DateTime(2025, 12, 06), CustomerId = 5, Status = SalesOrderHeader.OrderStatus.Oprettet}
+            new SalesOrderHeader {OrderNumber = 1, OrderCreatedAt = new DateTime(2025, 12, 05), OrderCompletedAt = new DateTime(2025, 12, 06), CustomerId = 1001, Status = SalesOrderHeader.OrderStatus.Oprettet}
         };
-        public SalesOrderHeader GetSalesOrderHeader(int id)
+        public SalesOrderHeader? GetSalesOrderHeader(int id)
         {
             for (int i = 0; i < SalesOrderHeaderList.Count; i++)
             {
                 SalesOrderHeader SalesOrderHeader = SalesOrderHeaderList[i];
-                if (SalesOrderHeader.OrderNumber == id)
+                if (id == SalesOrderHeader.OrderNumber)
+                {
+                    SalesOrderHeader.OrderLineList = GetAllOrderLine(SalesOrderHeader.OrderLineIdList);
+                    SalesOrderHeader.customer = GetCustomerById(SalesOrderHeader.CustomerId);
                     return SalesOrderHeader;
+                }
             }
             return null;
         }
@@ -22,10 +27,18 @@ namespace ErpCli.Data
         {
             List<SalesOrderHeader> SalesOrderHeaderCopy = new();
             SalesOrderHeaderCopy.AddRange(SalesOrderHeaderList);
+            for (int i = 0; i < SalesOrderHeaderCopy.Count; i++)
+            {
+                SalesOrderHeader header = SalesOrderHeaderCopy[i];
+                header.customer = GetCustomerById(header.CustomerId); 
+                header.OrderLineList = GetAllOrderLine(header.OrderLineIdList);
+            }
             return SalesOrderHeaderCopy;
         }
         public void AddSalesOrderHeader(SalesOrderHeader SalesOrderHeader)
         {
+            if (SalesOrderHeader.OrderNumber != 0) return;
+            SalesOrderHeader.OrderNumber = SalesOrderHeaderList.Count + 1;
             SalesOrderHeaderList.Add(SalesOrderHeader);
         }
         public void UpdateSalesOrderHeader(SalesOrderHeader editSalesOrderHeader)
@@ -49,6 +62,8 @@ namespace ErpCli.Data
                 }
             }
         }
+
+        
     }
     
 }

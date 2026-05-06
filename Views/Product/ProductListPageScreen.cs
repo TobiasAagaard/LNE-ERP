@@ -32,7 +32,7 @@ namespace ErpCli.Views
             listPage.AddColumn("Lagerantal", nameof(Product.StockQuantity));
             listPage.AddColumn("Indkøbspris", nameof(Product.Cost));
             listPage.AddColumn("Salgspris", nameof(Product.Price));
-            listPage.AddColumn("Avance i procent", nameof(Product.ProfitPercent));
+            listPage.AddColumn("Avance i procent", nameof(Product.ProfitPercent), 20);
 
 
             List<Product> products = Database.Instance.GetProducts();

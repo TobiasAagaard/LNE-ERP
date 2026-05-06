@@ -1,0 +1,10 @@
+﻿CREATE TABLE Persons (
+	Id				INT				IDENTITY(1,1) PRIMARY KEY,
+	FirstName		NVARCHAR(100)	NULL,
+	LastName		NVARCHAR(100)	NULL,
+	Phone			NVARCHAR(30)	NULL,
+	Email			NVARCHAR(254)	NULL,
+	AddressId		INT				NULL,
+	FOREIGN KEY (AddressId) REFERENCES Addresses(Id)
+		ON DELETE SET NULL
+);

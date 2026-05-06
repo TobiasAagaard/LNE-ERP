@@ -27,9 +27,9 @@ public class CompanyListScreen : Screen
         listPage.AddKey(ConsoleKey.F5, DeleteCompany);
 
 
-        listPage.AddColumn("Virksomhed", nameof(Company.Name), 40);
+        listPage.AddColumn("Virksomhed", nameof(Company.Name), 20);
         listPage.AddColumn("Land", nameof(Company.Country), 20);
-        listPage.AddColumn("Valuta", nameof(Company.Currency), 8);
+        listPage.AddColumn("Valuta", nameof(Company.Currency), 10);
 
         List<Company> companies = Database.Instance.GetAllCompanies();
         foreach (Company model in companies) 
