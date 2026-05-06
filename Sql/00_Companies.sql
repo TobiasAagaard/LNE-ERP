@@ -1,0 +1,9 @@
+CREATE TABLE Companies (
+	Id				INT				IDENTITY(1,1) PRIMARY KEY,
+	Name			NVARCHAR(200)	NOT NULL,
+	AddressId		INT				NOT NULL,
+	Currency		NVARCHAR(10)	NOT NULL,
+
+	FOREIGN KEY (AddressId) REFERENCES Addresses(Id)
+		ON DELETE CASCADE
+);
