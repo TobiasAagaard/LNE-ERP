@@ -1,5 +1,5 @@
 using ErpCli.Models;
-
+using Microsoft.Data.SqlClient;
 namespace ErpCli.Data
 {
     public partial class Database
@@ -12,15 +12,17 @@ namespace ErpCli.Data
 
         public Company? GetCompanyById(int id)
         {
-            for (int i = 0; i < Companies.Count; i++)
-            {
-                Company company = Companies[i];
-                if (company.Id == id)
-                {
-                    return company;
-                }
-            }
-             return null;
+            using SqlConnection connection = GetConnection();
+            SqlCommand cmd = connection.CreateCommand();
+            cmd.CommandText = @"SELECT Id, Name, Street, Number, PostalCode, City, Country, Currency
+                                FROM Companies
+                                WHERE Id = @id";
+            cmd.Parameters.AddWithValue("@id", id);
+
+            using SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.Read())
+                return ReadCompany(reader);
+            return null;
         }
 
         public List<Company> GetAllCompanies()
@@ -61,6 +63,21 @@ namespace ErpCli.Data
                     Companies.RemoveAt(i);
                 }
             }
+        }
+
+        private Company ReadCompany(SqlDataReader reader)
+        {
+            return new Company
+            {
+                Id = reader.GetInt32(0),
+                Name = reader.GetString(1),
+                Street = reader.GetString(2),
+                Number = reader.GetString(3),
+                PostalCode = reader.GetString(4),
+                City = reader.GetString(5),
+                Country = reader.GetString(6),
+                Currency = (Currency)reader.GetInt32(7)
+            };
         }
     }
 

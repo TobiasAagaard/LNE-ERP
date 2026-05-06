@@ -8,7 +8,7 @@ namespace ErpCli.Data
         /// <summary>
         /// Returns the product with the given Id, or null if no such product exists.
         /// </summary>
-        public Product? GetProduct(int id)
+        public Product? GetProductById(int id)
         {
             using SqlConnection connection = GetConnection();
             SqlCommand cmd = connection.CreateCommand();
