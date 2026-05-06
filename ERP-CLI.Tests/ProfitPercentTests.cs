@@ -5,7 +5,7 @@ namespace ERP_CLI.Tests;
 public class ProfitPercentTests
 {
     [Theory]
-    [InlineData(100, 50, 100)]   // Price double cost -> 100% profit
+    [InlineData(100, 50, 100)]   // Price double the cost -> 100% profit
     [InlineData(150, 150, 0)]    // Price equal to cost -> 0% profit
     [InlineData(80, 100, -20)]   // Price less than cost -> -20% (loss)
     public void ProfitPercent_ReturnsExpectedPercentage(double price, double cost, double expected)
