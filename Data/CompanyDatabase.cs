@@ -47,6 +47,14 @@ namespace ErpCli.Data
 
         public void AddCompany(Company company)
         {
+            using SqlConnection connection = GetConnection();
+            using SqlTransaction transaction = connection.BeginTransaction();
+
+            SqlCommand addrCmd = connection.CreateCommand();
+            addrCmd.Transaction = transaction;
+            addrCmd.CommandText = @"INSERT INTO Adresses (Street, Number, PostalCode, City, Country)
+                                    OUTPUT INSERTED.Id
+                                    VALUES (@street, @number, @postalCode, @city, @country) ";
             
         }
 
@@ -86,6 +94,13 @@ namespace ErpCli.Data
                 Country = reader.GetString(6),
                 Currency = (Currency)reader.GetInt32(7)
             };
+        }
+
+        private static void BindCompanyParameters(SqlCommand cmd, Company company)
+        {
+            cmd.Parameters.AddWithValue("@name", (object?)company.Name ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@addressId", company.Address != null ? (object)company.Address.Id : DBNull.Value);
+            cmd.Parameters.AddWithValue("@currency", (int)company.Currency);
         }
     }
 
