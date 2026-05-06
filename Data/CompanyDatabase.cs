@@ -47,12 +47,7 @@ namespace ErpCli.Data
 
         public void AddCompany(Company company)
         {
-            if (company.Id != 0)
-            {
-                return;
-            }
-            company.Id = Companies.Count + 1;
-            Companies.Add(company);
+            
         }
 
         public void UpdateCompany(Company updatedCompany)
