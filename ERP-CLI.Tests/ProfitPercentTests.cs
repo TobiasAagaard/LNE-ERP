@@ -2,7 +2,7 @@
 
 namespace ERP_CLI.Tests;
 
-public class ProductTests
+public class ProfitPercentTests
 {
     [Theory]
     [InlineData(100, 50, 100)]   // Price double cost -> 100% profit
