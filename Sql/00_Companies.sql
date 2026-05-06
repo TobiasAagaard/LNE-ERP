@@ -1,0 +1,10 @@
+CREATE TABLE Companies (
+	Id				INT				IDENTITY(1,1) PRIMARY KEY,
+	Name			NVARCHAR(200)	NULL,
+	Street			NVARCHAR(100)	NULL,
+	Number			NVARCHAR(50)	NULL,
+	PostalCode		NVARCHAR(20)	NULL,
+	City			NVARCHAR(50)	NULL,
+	Country			NVARCHAR(50)	NULL,
+	Currency		INT				NOT NULL
+);
