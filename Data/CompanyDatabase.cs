@@ -14,22 +14,35 @@ namespace ErpCli.Data
         {
             using SqlConnection connection = GetConnection();
             SqlCommand cmd = connection.CreateCommand();
-            cmd.CommandText = @"SELECT Id, Name, Street, Number, PostalCode, City, Country, Currency
-                                FROM Companies
-                                WHERE Id = @id";
+            cmd.CommandText = @"SELECT c.Id, c.Name, a.Street, a.Number, a.PostalCode, a.City, a.Country, c.Currency
+                                FROM Companies c
+                                INNER JOIN Addresses a ON c.AddressId = a.Id
+                                WHERE c.Id = @id";
             cmd.Parameters.AddWithValue("@id", id);
 
             using SqlDataReader reader = cmd.ExecuteReader();
             if (reader.Read())
+            {
                 return ReadCompany(reader);
+            }
             return null;
         }
 
         public List<Company> GetAllCompanies()
         {
-            List<Company> companyCopy = new List<Company>();
-            companyCopy.AddRange(Companies);
-            return companyCopy;
+            List<Company> companies = new();
+            using SqlConnection connection = GetConnection();
+            SqlCommand cmd = connection.CreateCommand();
+            cmd.CommandText = @"SELECT c.Id, c.Name, a.Street, a.Number, a.PostalCode, a.City, a.Country, c.Currency
+                                FROM Companies c
+                                INNER JOIN Addresses a ON c.AddressId = a.Id";
+            
+            using SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                companies.Add(ReadCompany(reader));
+            }
+            return companies;
         }
 
         public void AddCompany(Company company)
