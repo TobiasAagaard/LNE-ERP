@@ -52,10 +52,19 @@ namespace ErpCli.Data
 
             SqlCommand addrCmd = connection.CreateCommand();
             addrCmd.Transaction = transaction;
-            addrCmd.CommandText = @"INSERT INTO Adresses (Street, Number, PostalCode, City, Country)
+            addrCmd.CommandText = @"INSERT INTO Addresses (Street, Number, PostalCode, City, Country)
                                     OUTPUT INSERTED.Id
                                     VALUES (@street, @number, @postalCode, @city, @country) ";
-            
+            BindAddressParameters(addrCmd, company);
+            int addressId = (int)addrCmd.ExecuteScalar();
+
+            SqlCommand compCmd = connection.CreateCommand();
+            compCmd.Transaction = transaction;
+            compCmd.CommandText = @"INSERT INTO Companies (Name, Currency, AddressId)
+                                    VALUES (@name, @currency, @addressId)";
+            BindCompanyParameters(compCmd, company, addressId);
+            compCmd.ExecuteNonQuery();
+            transaction.Commit();
         }
 
         public void UpdateCompany(Company updatedCompany)
@@ -92,15 +101,23 @@ namespace ErpCli.Data
                 PostalCode = reader.GetString(4),
                 City = reader.GetString(5),
                 Country = reader.GetString(6),
-                Currency = (Currency)reader.GetInt32(7)
+                Currency = (Currency)Enum.Parse(typeof(Currency), reader.GetString(7))
             };
         }
 
-        private static void BindCompanyParameters(SqlCommand cmd, Company company)
+        private static void BindAddressParameters(SqlCommand cmd, Company company)
         {
-            cmd.Parameters.AddWithValue("@name", (object?)company.Name ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@addressId", company.Address != null ? (object)company.Address.Id : DBNull.Value);
-            cmd.Parameters.AddWithValue("@currency", (int)company.Currency);
+            cmd.Parameters.AddWithValue("@street", (object?)company.Street ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@number", (object?)company.Number ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@postalCode", (object?)company.PostalCode ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@city", (object?)company.City ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@country", (object?)company.Country ?? DBNull.Value);
+        }
+        private static void BindCompanyParameters(SqlCommand cmd, Company company, int addressId)
+        {
+            cmd.Parameters.AddWithValue("@name", company.Name);
+            cmd.Parameters.AddWithValue("@currency", company.Currency);
+            cmd.Parameters.AddWithValue("@addressId", addressId);
         }
     }
 
