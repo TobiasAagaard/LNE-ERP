@@ -69,14 +69,32 @@ namespace ErpCli.Data
 
         public void UpdateCompany(Company updatedCompany)
         {
-            for (int i = 0; i < Companies.Count; i++)
-            {
-                Company company = Companies[i];
-                if (company.Id == updatedCompany.Id)
-                {
-                    Companies[i] = updatedCompany;
-                }
-            }
+            using SqlConnection connection = GetConnection();
+            using SqlTransaction transaction = connection.BeginTransaction();
+
+            SqlCommand cmd = connection.CreateCommand();
+            cmd.Transaction = transaction;
+            cmd.CommandText = @"UPDATE a
+                                SET Street = @street,
+                                    Number = @number,
+                                    PostalCode = @postalCode,
+                                    City = @city,
+                                    Country = @country
+                                FROM Addresses a
+                                INNER JOIN Companies c ON c.AddressId = a.Id
+                                WHERE c.Id = @id;
+
+                                UPDATE Companies
+                                SET Name = @name,
+                                    Currency = @currency
+                                WHERE Id = @id";
+            cmd.Parameters.AddWithValue("@id", updatedCompany.Id);
+            cmd.Parameters.AddWithValue("@name", updatedCompany.Name);
+            cmd.Parameters.AddWithValue("@currency", updatedCompany.Currency);
+            BindAddressParameters(cmd, updatedCompany);
+
+            cmd.ExecuteNonQuery();
+            transaction.Commit();
         }
         public void DeleteCompany(int id)
         {
