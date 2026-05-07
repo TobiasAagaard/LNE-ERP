@@ -23,7 +23,6 @@ namespace ErpCli.Views
         {
             ExitOnEscape();
             Form<Customer> form = new();
-
             form.TextBox("Fornavn", nameof(customer.FirstName));
             form.TextBox("Efternavn", nameof(customer.LastName));
 
@@ -37,6 +36,16 @@ namespace ErpCli.Views
             form.TextBox("Email", nameof(customer.Email));
             if (form.Edit(customer))
             {
+                if (string.IsNullOrEmpty(customer.FirstName)
+                    || string.IsNullOrEmpty(customer.LastName)
+                    || string.IsNullOrEmpty(customer.Street)
+                    || string.IsNullOrEmpty(customer.Number)
+                    || string.IsNullOrEmpty(customer.PostalCode)
+                    || string.IsNullOrEmpty(customer.City))
+                {
+                    Console.WriteLine("Navn og adresse felter må ikke være tomme!");
+                    return;
+                }
                 if (customer.CustomerId != 0)
                 {
                     Database.Instance.UpdateCustomer(customer);
