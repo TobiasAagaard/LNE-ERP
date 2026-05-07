@@ -1,17 +1,11 @@
 using ErpCli.Models;
 using ErpCli.Helpers;
 using Microsoft.Data.SqlClient;
-namespace ErpCli.Data
 
+namespace ErpCli.Data
 {
     public partial class Database
     {
-        List<Company> Companies = new List<Company>()
-        {
-            new Company { Id = 1, Name = "NovoNordisk", Street = "Vinkelvej", Number = "142", PostalCode = "9000", City = "Aalborg", Country = "Danmark", Currency = Currency.DKK },
-            new Company { Id = 2, Name = "Microsoft", Street = "Micro Street", Number = "2", PostalCode = "98033", City = "Redmond", Country = "USA", Currency = Currency.USD },
-        };
-
         public Company? GetCompanyById(int id)
         {
             using SqlConnection connection = GetConnection();
