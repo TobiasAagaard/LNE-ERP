@@ -1,8 +1,6 @@
 using TECHCOOL.UI;
 using ErpCli.Models;
-using ErpCli.Helpers;
 using ErpCli.Data;
-using System.Reflection.Metadata;
 
 
 namespace ErpCli.Views
