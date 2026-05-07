@@ -74,15 +74,15 @@ namespace ErpCli.Data
 
             SqlCommand cmd = connection.CreateCommand();
             cmd.Transaction = transaction;
-            cmd.CommandText = @"UPDATE a
+            cmd.CommandText = @"UPDATE Addresses
                                 SET Street = @street,
                                     Number = @number,
                                     PostalCode = @postalCode,
                                     City = @city,
                                     Country = @country
-                                FROM Addresses a
-                                INNER JOIN Companies c ON c.AddressId = a.Id
-                                WHERE c.Id = @id;
+                                FROM Addresses address
+                                INNER JOIN Companies company ON company.AddressId = address.Id
+                                WHERE company.Id = @id;
 
                                 UPDATE Companies
                                 SET Name = @name,
@@ -98,14 +98,17 @@ namespace ErpCli.Data
         }
         public void DeleteCompany(int id)
         {
-            for (int i = 0; i < Companies.Count; i++)
-            {
-                Company company = Companies[i];
-                if (company.Id == id)
-                {
-                    Companies.RemoveAt(i);
-                }
-            }
+            using SqlConnection connection = GetConnection();
+            SqlCommand cmd = connection.CreateCommand();
+            cmd.CommandText = @"DELETE company
+                                FROM Companies company
+                                WHERE company.Id = @id;
+                                DELETE address
+                                FROM Addresses address
+                                LEFT JOIN Companies company ON company.AddressId = address.Id
+                                WHERE company.Id IS NULL";
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.ExecuteNonQuery();
         }
 
         private Company ReadCompany(SqlDataReader reader)
