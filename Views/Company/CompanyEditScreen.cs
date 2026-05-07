@@ -35,8 +35,18 @@ namespace ErpCli.Views
             form.TextBox("Nummer", nameof(Company.Number));
             form.TextBox("Postnummer", nameof(Company.PostalCode));
             form.TextBox("By", nameof(Company.City));
-            if (form.Edit(company)) 
+            if (form.Edit(company))
             {
+                if (string.IsNullOrEmpty(company.Name)
+                    || string.IsNullOrEmpty(company.Street)
+                    || string.IsNullOrEmpty(company.Number)
+                    || string.IsNullOrEmpty(company.PostalCode)
+                    || string.IsNullOrEmpty(company.City)
+                    || string.IsNullOrEmpty(company.Country))
+                {
+                    Console.WriteLine("Navn og adresse må ikke være tomme");
+                    return;
+                }
                 if (company.Id != 0)
                 {
                     Database.Instance.UpdateCompany(company);

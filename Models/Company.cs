@@ -3,7 +3,7 @@ namespace ErpCli.Models
     public class Company
     {
         public int Id { get; set; }
-        public string? Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public Currency Currency { get; set; }
         public Address Address { get; set; } = new();
         public string Street
