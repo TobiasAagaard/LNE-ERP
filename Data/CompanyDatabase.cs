@@ -59,15 +59,7 @@ namespace ErpCli.Data
             compCmd.CommandText = @"INSERT INTO Companies (Name, Currency, AddressId)
                                     VALUES (@name, @currency, @addressId)";
             BindCompanyParameters(compCmd, company, addressId);
-            try 
-            {
             compCmd.ExecuteNonQuery();
-            }
-            catch (SqlException ex)
-            {
-                ExceptionHelper.HandleException(ex, "Fejl opstod under oprettelse af virksomhed");
-                throw;
-            }
         }
 
         public void UpdateCompany(Company updatedCompany)
@@ -95,17 +87,10 @@ namespace ErpCli.Data
             cmd.Parameters.AddWithValue("@name", updatedCompany.Name);
             cmd.Parameters.AddWithValue("@currency", updatedCompany.Currency);
             BindAddressParameters(cmd, updatedCompany);
-
-            try
-            {
-                cmd.ExecuteNonQuery();
-                transaction.Commit();
-            }
-            catch (SqlException ex)
-            {
-                ExceptionHelper.HandleException(ex, "Fejl opstod under opdatering af virksomhed");
-                throw;
-            }
+            cmd.ExecuteNonQuery();
+            cmd.Transaction.Commit();
+          
+            
         }
         public void DeleteCompany(int id)
         {
@@ -119,15 +104,7 @@ namespace ErpCli.Data
                                 LEFT JOIN Companies company ON company.AddressId = address.Id
                                 WHERE company.Id IS NULL";
             cmd.Parameters.AddWithValue("@id", id);
-            try 
-            {
-                cmd.ExecuteNonQuery();
-            }
-            catch (SqlException ex)
-            {
-                ExceptionHelper.HandleException(ex, "Fejl opstod under forsøg på at slette virksomhed");
-                throw;
-            }
+            cmd.ExecuteNonQuery();
         }
 
         private Company ReadCompany(SqlDataReader reader)
@@ -147,11 +124,11 @@ namespace ErpCli.Data
 
         private static void BindAddressParameters(SqlCommand cmd, Company company)
         {
-            cmd.Parameters.AddWithValue("@street", (object?)company.Street ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@number", (object?)company.Number ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@postalCode", (object?)company.PostalCode ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@city", (object?)company.City ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@country", (object?)company.Country ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@street", company.Street);
+            cmd.Parameters.AddWithValue("@number", company.Number);
+            cmd.Parameters.AddWithValue("@postalCode", company.PostalCode);
+            cmd.Parameters.AddWithValue("@city", company.City);
+            cmd.Parameters.AddWithValue("@country", company.Country);
         }
         private static void BindCompanyParameters(SqlCommand cmd, Company company, int addressId)
         {

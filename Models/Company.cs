@@ -5,66 +5,31 @@ namespace ErpCli.Models
         public int Id { get; set; }
         public string? Name { get; set; }
         public Currency Currency { get; set; }
-        public Address? Address { get; set; }
-         public string? Street
+        public Address Address { get; set; } = new();
+        public string Street
         {
-            get => Address?.Street;
-            set
-            {
-                if (Address == null)
-                {
-                    Address = new Address();
-                }
-                Address.Street = value;
-            }
+            get => Address.Street;
+            set => Address.Street = value ?? string.Empty;
         }
-        public string? Number
+        public string Number
         {
-            get => Address?.Number;
-            set
-            {
-                if (Address == null)
-                {
-                    Address = new Address();
-                }
-                Address.Number = value;
-            }
+            get => Address.Number;
+            set => Address.Number = value ?? string.Empty;
         }
-        public string? PostalCode
+        public string PostalCode
         {
-            get => Address?.PostalCode;
-            set
-            {
-                if (Address == null)
-                {
-                    Address = new Address();
-                }
-                Address.PostalCode = value;
-            }
+            get => Address.PostalCode;
+            set => Address.PostalCode = value ?? string.Empty;
         }
-        public string? City
+        public string City
         {
-            get => Address?.City;
-            set
-            {
-                if (Address == null)
-                {
-                    Address = new Address();
-                }
-                Address.City = value;
-            }
+            get => Address.City;
+            set => Address.City = value ?? string.Empty;
         }
-        public string? Country
+        public string Country
         {
-            get => Address?.Country;
-            set
-            {
-                if (Address == null)
-                {
-                    Address = new Address();
-                }
-                Address.Country = value;
-            }
+            get => Address.Country;
+            set => Address.Country = value ?? string.Empty;
         }
     }
 }
