@@ -44,9 +44,9 @@ namespace ErpCli.Views
                 if (string.IsNullOrEmpty(product.ItemNumber)
                     || string.IsNullOrEmpty(product.Name)
                     || string.IsNullOrEmpty(product.Description)
-                    || product.Price <= 0
-                    || product.Cost < 0
                     || string.IsNullOrEmpty(product.Location)
+                    || product.Price <= 0 
+                    || product.Cost < 0
                     || product.StockQuantity < 0)
                 {
                     Console.WriteLine("Felterne må ikke være tomme, og priser/antal skal være positive!");
