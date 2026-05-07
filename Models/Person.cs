@@ -1,14 +1,16 @@
+using System.Data.SqlTypes;
+
 namespace ErpCli.Models
 {
     public class Person
     {
         public int Id { get; set; }
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? FullName => $"{FirstName} {LastName}";
-        public override string ToString() => FullName ?? "";
-        public string? Phone { get; set; }
-        public string? Email { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string FullName => $"{FirstName} {LastName}";
+        public override string ToString() => FullName;
+        public string Phone { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
 
         public Address Address { get; set; } = new();
         public string Street
