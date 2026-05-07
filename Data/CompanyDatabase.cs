@@ -1,6 +1,8 @@
 using ErpCli.Models;
+using ErpCli.Helpers;
 using Microsoft.Data.SqlClient;
 namespace ErpCli.Data
+
 {
     public partial class Database
     {
@@ -63,8 +65,15 @@ namespace ErpCli.Data
             compCmd.CommandText = @"INSERT INTO Companies (Name, Currency, AddressId)
                                     VALUES (@name, @currency, @addressId)";
             BindCompanyParameters(compCmd, company, addressId);
+            try 
+            {
             compCmd.ExecuteNonQuery();
-            transaction.Commit();
+            }
+            catch (SqlException ex)
+            {
+                ExceptionHelper.HandleException(ex, "Fejl opstod under oprettelse af virksomhed");
+                throw;
+            }
         }
 
         public void UpdateCompany(Company updatedCompany)
@@ -93,8 +102,16 @@ namespace ErpCli.Data
             cmd.Parameters.AddWithValue("@currency", updatedCompany.Currency);
             BindAddressParameters(cmd, updatedCompany);
 
-            cmd.ExecuteNonQuery();
-            transaction.Commit();
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+            }
+            catch (SqlException ex)
+            {
+                ExceptionHelper.HandleException(ex, "Fejl opstod under opdatering af virksomhed");
+                throw;
+            }
         }
         public void DeleteCompany(int id)
         {
@@ -108,7 +125,15 @@ namespace ErpCli.Data
                                 LEFT JOIN Companies company ON company.AddressId = address.Id
                                 WHERE company.Id IS NULL";
             cmd.Parameters.AddWithValue("@id", id);
-            cmd.ExecuteNonQuery();
+            try 
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (SqlException ex)
+            {
+                ExceptionHelper.HandleException(ex, "Fejl opstod under forsøg på at slette virksomhed");
+                throw;
+            }
         }
 
         private Company ReadCompany(SqlDataReader reader)
