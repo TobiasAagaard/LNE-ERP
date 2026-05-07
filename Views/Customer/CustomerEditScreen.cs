@@ -26,10 +26,13 @@ namespace ErpCli.Views
 
             form.TextBox("Fornavn", nameof(customer.FirstName));
             form.TextBox("Efternavn", nameof(customer.LastName));
+
             form.TextBox("Vej", nameof(customer.Street));
             form.TextBox("Husnummer", nameof(customer.Number));
             form.TextBox("Postnummer", nameof(customer.PostalCode));
             form.TextBox("By", nameof(customer.City));
+            form.TextBox("Land", nameof(customer.Country));
+            
             form.TextBox("Telefon", nameof(customer.Phone));
             form.TextBox("Email", nameof(customer.Email));
             if (form.Edit(customer))
