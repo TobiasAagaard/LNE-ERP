@@ -1,120 +1,69 @@
 using ErpCli.Models;
-using Microsoft.Data.SqlClient;
+
 
 namespace ErpCli.Data
 {
     public partial class Database
     {
+        List<SalesOrderHeader> SalesOrderHeaderList = new List<SalesOrderHeader>()
+        {
+            new SalesOrderHeader {OrderNumber = 1, OrderCreatedAt = new DateTime(2025, 12, 05), OrderCompletedAt = new DateTime(2025, 12, 06), CustomerId = 1001, Status = SalesOrderHeader.OrderStatus.Oprettet}
+        };
         public SalesOrderHeader? GetSalesOrderHeader(int id)
         {
-            using SqlConnection connection = GetConnection();
-            using SqlCommand headerCmd = connection.CreateCommand();
-            headerCmd.CommandText = @"SELECT OrderNumber, OrderCreatedAt, OrderCompletedAt, CustomerId, FirstName, LastName, Status
-                                        FROM SalesOrderHeaders
-                                        INNER JOIN Customers
-                                        ON CustomerId = Id
-                                        WHERE OrderNumber = @id;";
-            headerCmd.Parameters.AddWithValue("@id", id);
-
-            using SqlDataReader reader = headerCmd.ExecuteReader();
-            if (reader.Read())
-                return ReadHeader(reader);
+            for (int i = 0; i < SalesOrderHeaderList.Count; i++)
+            {
+                SalesOrderHeader SalesOrderHeader = SalesOrderHeaderList[i];
+                if (id == SalesOrderHeader.OrderNumber)
+                {
+                    SalesOrderHeader.OrderLineList = GetOrderLinesByOrderNumber(SalesOrderHeader.OrderNumber);
+                    SalesOrderHeader.customer = GetCustomerById(SalesOrderHeader.CustomerId);
+                    return SalesOrderHeader;
+                }
+            }
             return null;
         }
         public List<SalesOrderHeader> GetSalesOrderHeaders()
         {
-            List<SalesOrderHeader> headers = new();
-            using SqlConnection connection = GetConnection();
-            using SqlCommand cmd = connection.CreateCommand();
-            cmd.CommandText = @"SELECT OrderNumber, OrderCreatedAt, OrderCompletedAt, CustomerId, FirstName, LastName, Status
-                                FROM SalesOrderHeaders
-                                INNER JOIN Customers c
-                                ON CustomerId = c.Id
-                                INNER JOIN Persons p
-                                ON PersonId = p.Id;";      
-            using SqlDataReader reader = cmd.ExecuteReader();
-            while (reader.Read())
-                headers.Add(ReadHeader(reader));
-            return headers;
+            List<SalesOrderHeader> SalesOrderHeaderCopy = new();
+            SalesOrderHeaderCopy.AddRange(SalesOrderHeaderList);
+            for (int i = 0; i < SalesOrderHeaderCopy.Count; i++)
+            {
+                SalesOrderHeader header = SalesOrderHeaderCopy[i];
+                header.customer = GetCustomerById(header.CustomerId);
+                header.OrderLineList = GetOrderLinesByOrderNumber(header.OrderNumber);
+            }
+            return SalesOrderHeaderCopy;
         }
         public void AddSalesOrderHeader(SalesOrderHeader SalesOrderHeader)
         {
-            using SqlConnection connection = GetConnection();
-            SqlCommand cmd = connection.CreateCommand();
-            cmd.CommandText = @"INSERT INTO SalesOrderHeaders (OrderCreatedAt, OrderCompletedAt, CustomerId, Status)
-                                VALUES (@OrderCreatedAt, @OrderCompletedAt, @CustomerId, @Status)";
-            BindHeaderParameters(cmd, SalesOrderHeader);
-            cmd.ExecuteNonQuery();
+            if (SalesOrderHeader.OrderNumber != 0) return;
+            SalesOrderHeader.OrderNumber = SalesOrderHeaderList.Count + 1;
+            SalesOrderHeaderList.Add(SalesOrderHeader);
         }
         public void UpdateSalesOrderHeader(SalesOrderHeader editSalesOrderHeader)
         {
-            using SqlConnection connection = GetConnection();
-            using SqlTransaction transaction = connection.BeginTransaction();
-
-            try
+            for (int i = 0; i < SalesOrderHeaderList.Count; i++)
             {
-                SqlCommand cmd = connection.CreateCommand();
-                cmd.Transaction = transaction;
-                cmd.CommandText = @"UPDATE SalesOrderHeaders
-                                    SET OrderCreatedAt = @OrderCreatedAt,
-                                        OrderCompletedAt = @OrderCompletedAt,
-                                        CustomerId = @CustomerId,
-                                        Status = @Status
-                                    WHERE OrderNumber = @id;";
-                cmd.Parameters.AddWithValue("@id", editSalesOrderHeader.OrderNumber);
-                BindHeaderParameters(cmd, editSalesOrderHeader);
-                cmd.ExecuteNonQuery();
-                transaction.Commit();
-            }
-            catch
-            {
-                transaction.Rollback();
-                throw;
+                SalesOrderHeader SalesOrderHeader = SalesOrderHeaderList[i];
+                if (SalesOrderHeader.OrderNumber == editSalesOrderHeader.OrderNumber)
+                    SalesOrderHeaderList[i] = editSalesOrderHeader;
             }
         }
         public void DeleteSalesOrderHeader(int id)
         {
-            using SqlConnection connection = GetConnection();
-            using SqlTransaction transaction = connection.BeginTransaction();
+            for (int i = 0; i < SalesOrderHeaderList.Count; i++)
+            {
+                SalesOrderHeader salesOrderHeader = SalesOrderHeaderList[i];
+                if (salesOrderHeader.OrderNumber == id)
+                {
+                    SalesOrderHeaderList.RemoveAt(i);
+                    break;
+                }
+            }
+        }
 
-            try
-            {
-                SqlCommand cmd = connection.CreateCommand();
-                cmd.Transaction = transaction;
-                cmd.CommandText = @"DELETE header
-                                    FROM SalesOrderHeaders header
-                                    WHERE OrderNumber = @id;";
-                cmd.Parameters.AddWithValue("@id", id);
-                cmd.ExecuteNonQuery();
-                transaction.Commit();
-            }
-            catch
-            {
-                transaction.Rollback();
-                throw;
-            }
-        }
         
-        private static SalesOrderHeader ReadHeader(SqlDataReader reader)
-        {
-            return new SalesOrderHeader
-            {
-                OrderNumber         = reader.GetInt32(0),
-                OrderCreatedAt      = reader.GetDateTime(1),
-                OrderCompletedAt    = reader.GetDateTime(2),
-                CustomerId          = reader.GetInt32(3),
-                FirstName           = reader.GetString(4),
-                LastName            = reader.GetString(5),
-                Status              = (SalesOrderHeader.OrderStatus)reader.GetInt32(6)
-            };
-        }
-        private static void BindHeaderParameters(SqlCommand cmd, SalesOrderHeader h)
-        {
-            cmd.Parameters.AddWithValue("@OrderNumber", (object?)h.OrderNumber ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@OrderCreatedAt", (object?)h.OrderCreatedAt ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@OrderCompletedAt", (object?)h.OrderCompletedAt ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@CustomerId", (object?)h.CustomerId ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@Status", (object?)h.Status ?? DBNull.Value);
-        }
-    }   
+    }
+    
 }

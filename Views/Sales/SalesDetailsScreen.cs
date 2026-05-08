@@ -33,7 +33,7 @@ namespace ErpCli.Views
             Console.WriteLine($"Ordrenummer: {header.OrderNumber}");
             Console.WriteLine($"Dato: {header.OrderCreatedAt}");
             Console.WriteLine($"Kundenummer: {header.CustomerId}");
-            Console.WriteLine($"Navn: {header.FullName}");
+            Console.WriteLine($"Navn: {customer?.FirstName} {customer?.LastName}");
 
             ListPage<OrderLine> listPage = new();
             

@@ -12,9 +12,7 @@ namespace ErpCli.Models
         public double? OrderTotal =>
             OrderLineList.Sum(orderLine => orderLine.Product?.Price * orderLine.Quantity ?? 0);
         public Customer? customer { get; set; }
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? FullName => $"{FirstName} {LastName}";
+        public string? FullName => customer?.FullName;
 
         public enum OrderStatus
         {
