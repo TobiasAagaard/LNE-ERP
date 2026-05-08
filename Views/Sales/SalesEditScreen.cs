@@ -46,7 +46,7 @@ namespace ErpCli.Views
             if (form.Edit(salesOrderHeader))
             {
                 salesOrderHeader.CustomerId = salesOrderHeader.customer?.CustomerId ?? 0;
-
+                
                 if (salesOrderHeader.OrderNumber != 0)
                 {
                     Database.Instance.UpdateSalesOrderHeader(salesOrderHeader);

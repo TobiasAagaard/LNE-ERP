@@ -41,9 +41,12 @@ namespace ErpCli.Views
                     || string.IsNullOrEmpty(customer.Street)
                     || string.IsNullOrEmpty(customer.Number)
                     || string.IsNullOrEmpty(customer.PostalCode)
-                    || string.IsNullOrEmpty(customer.City))
+                    || string.IsNullOrEmpty(customer.City)
+                    || string.IsNullOrEmpty(customer.Country)
+                    || string.IsNullOrEmpty(customer.Phone)
+                    || string.IsNullOrEmpty(customer.Email))
                 {
-                    Console.WriteLine("Navn og adresse felter må ikke være tomme!");
+                    Console.WriteLine("Felterne må ikke være tomme!");
                     return;
                 }
                 if (customer.CustomerId != 0)
