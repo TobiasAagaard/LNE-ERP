@@ -82,7 +82,8 @@ namespace ErpCli.Data
                 customerCmd.CommandText = @"INSERT INTO Customers (PersonId, LastPurchaseAt)
                                             VALUES (@PersonId, @LastPurchaseAt);";
                 customerCmd.Parameters.Add("@PersonId", SqlDbType.Int).Value = personId;
-                customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value = (object?)customer.LastPurchaseAt ?? DBNull.Value;
+                customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value =
+                    (object?)customer.LastPurchaseAt ?? DBNull.Value;
 
                 customerCmd.ExecuteNonQuery();
 
@@ -113,7 +114,8 @@ namespace ErpCli.Data
                                             FROM Customers c
                                             INNER JOIN Persons p ON p.Id = c.PersonId
                                             WHERE p.Id = @id;";
-                customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value = (object?)updatedCustomer.LastPurchaseAt ?? DBNull.Value;
+                customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value =
+                    (object?)updatedCustomer.LastPurchaseAt ?? DBNull.Value;
                 customerCmd.Parameters.Add("@id", SqlDbType.Int).Value = updatedCustomer.Id;
 
                 customerCmd.ExecuteNonQuery();

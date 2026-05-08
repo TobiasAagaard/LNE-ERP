@@ -1,5 +1,6 @@
 using ErpCli.Models;
 using ErpCli.Data;
+using ErpCli.Helpers;
 using TECHCOOL.UI;
 
 namespace ErpCli.Views;
@@ -24,15 +25,27 @@ public class CompanyListScreen : Screen
        
         listPage.AddKey(ConsoleKey.F1, CreateNewCompany);
         listPage.AddKey(ConsoleKey.F2, EditCompany);
-        listPage.AddKey(ConsoleKey.F5, DeleteCompany);
+        listPage.AddKey(ConsoleKey.F5, RemoveCompany);
 
 
         listPage.AddColumn("Virksomhed", nameof(Company.Name), 20);
         listPage.AddColumn("Land", nameof(Company.Country), 20);
         listPage.AddColumn("Valuta", nameof(Company.Currency), 10);
 
-        List<Company> companies = Database.Instance.GetAllCompanies();
-        foreach (Company model in companies) 
+        List<Company> companies;
+        try
+        {
+            companies = Database.Instance.GetAllCompanies();
+        }
+        catch (Exception ex)
+        {
+            ExceptionHelper.ExceptionText(ex, "Fejl ved indlæsning af virksomheder");
+            Console.ReadKey(true);
+            Quit();
+            return;
+        }
+
+        foreach (Company model in companies)
         {
             listPage.Add(model);
         }
@@ -58,7 +71,7 @@ public class CompanyListScreen : Screen
         Screen.Display(new CompanyEditScreen(company));
     }
 
-    void DeleteCompany(Company company)
+    void RemoveCompany(Company company)
     {
         Database.Instance.DeleteCompany(company.Id);
         Screen.Clear();

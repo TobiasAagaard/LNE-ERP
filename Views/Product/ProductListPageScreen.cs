@@ -1,5 +1,6 @@
 using TECHCOOL.UI;
 using ErpCli.Models;
+using ErpCli.Helpers;
 using ErpCli.Data;
 
 namespace ErpCli.Views
@@ -35,7 +36,18 @@ namespace ErpCli.Views
             listPage.AddColumn("Avance i procent", nameof(Product.ProfitPercent), 20);
 
 
-            List<Product> products = Database.Instance.GetProducts();
+            List<Product> products;
+            try
+            {
+                products = Database.Instance.GetProducts();
+            }
+            catch (Exception ex)
+            {
+                ExceptionHelper.ExceptionText(ex, "Fejl ved indlæsning af produkter");
+                Console.ReadKey(true);
+                Quit();
+                return;
+            }
             foreach (Product model in products)
             {
                 listPage.Add(model);
@@ -44,7 +56,7 @@ namespace ErpCli.Views
             Product product = listPage.Select();
             if (product != null) 
             {
-                Display(new ProductDetails(product));
+                Screen.Display(new ProductDetails(product));
             }
             else
             {
