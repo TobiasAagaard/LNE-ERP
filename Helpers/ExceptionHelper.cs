@@ -2,10 +2,14 @@ namespace ErpCli.Helpers
 {
     public static class ExceptionHelper
     {
-        public static void HandleException(Exception ex, string contextMessage)
+        public static void ExceptioText(Exception ex, string contextMessage)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"{contextMessage}: {ex.Message}");
+            Console.WriteLine($"{contextMessage}");
+            Console.WriteLine();
+            Console.WriteLine($"Fejlbesked: {ex.Message}");
+            Console.WriteLine();
+            Console.WriteLine("Klik på en vilkårlig tast for at gå tilbage til hovedmenuen");
             Console.ResetColor();
         }
     }

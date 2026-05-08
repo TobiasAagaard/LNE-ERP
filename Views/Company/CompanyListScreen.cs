@@ -1,5 +1,6 @@
 using ErpCli.Models;
 using ErpCli.Data;
+using ErpCli.Helpers;
 using TECHCOOL.UI;
 
 namespace ErpCli.Views;
@@ -31,8 +32,20 @@ public class CompanyListScreen : Screen
         listPage.AddColumn("Land", nameof(Company.Country), 20);
         listPage.AddColumn("Valuta", nameof(Company.Currency), 10);
 
-        List<Company> companies = Database.Instance.GetAllCompanies();
-        foreach (Company model in companies) 
+        List<Company> companies;
+        try
+        {
+            companies = Database.Instance.GetAllCompanies();
+        }
+        catch (Exception ex)
+        {
+            ExceptionHelper.ExceptioText(ex, "Fejl ved indlæsning af virksomheder");
+            Console.ReadKey(true);
+            Quit();
+            return;
+        }
+
+        foreach (Company model in companies)
         {
             listPage.Add(model);
         }
