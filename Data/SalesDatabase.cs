@@ -16,7 +16,7 @@ namespace ErpCli.Data
                 SalesOrderHeader SalesOrderHeader = SalesOrderHeaderList[i];
                 if (id == SalesOrderHeader.OrderNumber)
                 {
-                    SalesOrderHeader.OrderLineList = GetAllOrderLine(SalesOrderHeader.OrderLineIdList);
+                    SalesOrderHeader.OrderLineList = GetOrderLinesByOrderNumber(SalesOrderHeader.OrderNumber);
                     SalesOrderHeader.customer = GetCustomerById(SalesOrderHeader.CustomerId);
                     return SalesOrderHeader;
                 }
@@ -30,8 +30,8 @@ namespace ErpCli.Data
             for (int i = 0; i < SalesOrderHeaderCopy.Count; i++)
             {
                 SalesOrderHeader header = SalesOrderHeaderCopy[i];
-                header.customer = GetCustomerById(header.CustomerId); 
-                header.OrderLineList = GetAllOrderLine(header.OrderLineIdList);
+                header.customer = GetCustomerById(header.CustomerId);
+                header.OrderLineList = GetOrderLinesByOrderNumber(header.OrderNumber);
             }
             return SalesOrderHeaderCopy;
         }

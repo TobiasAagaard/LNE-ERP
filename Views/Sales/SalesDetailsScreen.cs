@@ -50,7 +50,7 @@ namespace ErpCli.Views
             listPage.AddColumn("Antal", nameof(OrderLine.Quantity));
 
 
-            List<OrderLine> orderLineList = Database.Instance.GetAllOrderLine(header.OrderLineIdList);
+            List<OrderLine> orderLineList = Database.Instance.GetOrderLinesByOrderNumber(header.OrderNumber);
             foreach (OrderLine model in orderLineList)
             {
                 listPage.Add(model);
