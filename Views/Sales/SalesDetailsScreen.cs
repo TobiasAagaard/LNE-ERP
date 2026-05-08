@@ -31,7 +31,8 @@ namespace ErpCli.Views
             Console.WriteLine();
 
             Console.WriteLine($"Ordrenummer: {header.OrderNumber}");
-            Console.WriteLine($"Dato: {header.OrderCreatedAt}");
+            Console.WriteLine($"Dato oprettet: {header.OrderCreatedAt}");
+            Console.WriteLine($"Dato færdig: {header.OrderCompletedAt}");
             Console.WriteLine($"Kundenummer: {header.CustomerId}");
             Console.WriteLine($"Navn: {header.FullName}");
 

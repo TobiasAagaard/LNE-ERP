@@ -56,8 +56,10 @@ namespace ErpCli.Views
                 }
                 else
                 {
+                    if (salesOrderHeader.Status == SalesOrderHeader.OrderStatus.Færdig)
+                        salesOrderHeader.OrderCompletedAt = DateTime.Now;
+                        
                     salesOrderHeader.OrderCreatedAt = DateTime.Now;
-                    salesOrderHeader.OrderCompletedAt = DateTime.Now;
                     Database.Instance.AddSalesOrderHeader(salesOrderHeader);
                 }
                 Console.WriteLine("Ændringerne blev gemt");
