@@ -60,6 +60,7 @@ namespace ErpCli.Data
                                     VALUES (@name, @currency, @addressId)";
             BindCompanyParameters(compCmd, company, addressId);
             compCmd.ExecuteNonQuery();
+            transaction.Commit();
         }
 
         public void UpdateCompany(Company updatedCompany)
@@ -88,7 +89,7 @@ namespace ErpCli.Data
             cmd.Parameters.AddWithValue("@currency", updatedCompany.Currency);
             BindAddressParameters(cmd, updatedCompany);
             cmd.ExecuteNonQuery();
-            cmd.Transaction.Commit();
+            transaction.Commit();
           
             
         }
@@ -98,12 +99,12 @@ namespace ErpCli.Data
             SqlCommand cmd = connection.CreateCommand();
             cmd.CommandText = @"DELETE company
                                 FROM Companies company
-                                WHERE company.Id = @id;
+                                WHERE company.Id = @Id;
                                 DELETE address
                                 FROM Addresses address
                                 LEFT JOIN Companies company ON company.AddressId = address.Id
                                 WHERE company.Id IS NULL";
-            cmd.Parameters.AddWithValue("@id", id);
+            cmd.Parameters.AddWithValue("@Id", id);
             cmd.ExecuteNonQuery();
         }
 

@@ -36,6 +36,7 @@ namespace ErpCli.Views
             List<SalesOrderHeader> salesOrderHeaders = Database.Instance.GetSalesOrderHeaders();
             foreach (SalesOrderHeader model in salesOrderHeaders)
             {
+                model.OrderLineList = Database.Instance.GetOrderLinesByOrderNumber(model.OrderNumber);
                 listPage.Add(model);
             }
 

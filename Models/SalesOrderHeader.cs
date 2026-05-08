@@ -4,7 +4,7 @@ namespace ErpCli.Models
     {
         public int OrderNumber { get; set;}
         public DateTime OrderCreatedAt { get; set; }
-        public DateTime OrderCompletedAt { get; set;}
+        public DateTime? OrderCompletedAt { get; set;}
         public int CustomerId { get; set; }
         public OrderStatus Status { get; set; }
         public List<int> OrderLineIdList = new List<int>();
@@ -12,7 +12,9 @@ namespace ErpCli.Models
         public double? OrderTotal =>
             OrderLineList.Sum(orderLine => orderLine.Product?.Price * orderLine.Quantity ?? 0);
         public Customer? customer { get; set; }
-        public string? FullName => customer?.FullName;
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? FullName => $"{FirstName} {LastName}";
 
         public enum OrderStatus
         {
