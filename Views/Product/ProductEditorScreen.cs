@@ -41,6 +41,17 @@ namespace ErpCli.Views
 
             if (form.Edit(product)) 
             {
+                if (string.IsNullOrEmpty(product.ItemNumber)
+                    || string.IsNullOrEmpty(product.Name)
+                    || string.IsNullOrEmpty(product.Description)
+                    || string.IsNullOrEmpty(product.Location)
+                    || product.Price <= 0 
+                    || product.Cost < 0
+                    || product.StockQuantity < 0)
+                {
+                    Console.WriteLine("Felterne må ikke være tomme, og priser/antal skal være positive!");
+                    return;
+                }
                 if (product.Id != 0)
                 {
                     Database.Instance.UpdateProduct(product);

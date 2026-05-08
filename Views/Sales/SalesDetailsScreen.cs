@@ -33,7 +33,7 @@ namespace ErpCli.Views
             Console.WriteLine($"Ordrenummer: {header.OrderNumber}");
             Console.WriteLine($"Dato: {header.OrderCreatedAt}");
             Console.WriteLine($"Kundenummer: {header.CustomerId}");
-            Console.WriteLine($"Navn: {customer?.FirstName} {customer?.LastName}");
+            Console.WriteLine($"Navn: {header.FullName}");
 
             ListPage<OrderLine> listPage = new();
             
@@ -50,7 +50,7 @@ namespace ErpCli.Views
             listPage.AddColumn("Antal", nameof(OrderLine.Quantity));
 
 
-            List<OrderLine> orderLineList = Database.Instance.GetAllOrderLine(header.OrderLineIdList);
+            List<OrderLine> orderLineList = Database.Instance.GetOrderLinesByOrderNumber(header.OrderNumber);
             foreach (OrderLine model in orderLineList)
             {
                 listPage.Add(model);

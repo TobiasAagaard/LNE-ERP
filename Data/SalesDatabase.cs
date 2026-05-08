@@ -28,9 +28,10 @@ namespace ErpCli.Data
             using SqlCommand cmd = connection.CreateCommand();
             cmd.CommandText = @"SELECT OrderNumber, OrderCreatedAt, OrderCompletedAt, CustomerId, FirstName, LastName, Status
                                 FROM SalesOrderHeaders
-                                INNER JOIN Customers
-                                ON CustomerId = Id
-                                WHERE OrderNumber = @id;";
+                                INNER JOIN Customers c
+                                ON CustomerId = c.Id
+                                INNER JOIN Persons p
+                                ON PersonId = p.Id;";      
             using SqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
                 headers.Add(ReadHeader(reader));
@@ -40,8 +41,8 @@ namespace ErpCli.Data
         {
             using SqlConnection connection = GetConnection();
             SqlCommand cmd = connection.CreateCommand();
-            cmd.CommandText = @"INSERT INTO SalesOrderHeaders (OrderNumber, OrderCreatedAt, OrderCompletedAt, CustomerId, Status)
-                                VALUES (@OrderNumber, @OrderCreatedAt, @OrderCompletedAt, @CustomerId, @Status)";
+            cmd.CommandText = @"INSERT INTO SalesOrderHeaders (OrderCreatedAt, OrderCompletedAt, CustomerId, Status)
+                                VALUES (@OrderCreatedAt, @OrderCompletedAt, @CustomerId, @Status)";
             BindHeaderParameters(cmd, SalesOrderHeader);
             cmd.ExecuteNonQuery();
         }
@@ -58,7 +59,7 @@ namespace ErpCli.Data
                                     SET OrderCreatedAt = @OrderCreatedAt,
                                         OrderCompletedAt = @OrderCompletedAt,
                                         CustomerId = @CustomerId,
-                                        Status = @Status,
+                                        Status = @Status
                                     WHERE OrderNumber = @id;";
                 cmd.Parameters.AddWithValue("@id", editSalesOrderHeader.OrderNumber);
                 BindHeaderParameters(cmd, editSalesOrderHeader);
