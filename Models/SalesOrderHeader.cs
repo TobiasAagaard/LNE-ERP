@@ -4,7 +4,7 @@ namespace ErpCli.Models
     {
         public int OrderNumber { get; set;}
         public DateTime OrderCreatedAt { get; set; }
-        public DateTime OrderCompletedAt { get; set;}
+        public DateTime? OrderCompletedAt { get; set;}
         public int CustomerId { get; set; }
         public OrderStatus Status { get; set; }
         public List<int> OrderLineIdList = new List<int>();

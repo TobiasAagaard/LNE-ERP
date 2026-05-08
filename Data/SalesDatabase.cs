@@ -125,7 +125,7 @@ namespace ErpCli.Data
             {
                 OrderNumber         = reader.GetInt32(0),
                 OrderCreatedAt      = reader.GetDateTime(1),
-                OrderCompletedAt    = reader.GetDateTime(2),
+                OrderCompletedAt    = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
                 CustomerId          = reader.GetInt32(3),
                 FirstName           = reader.GetString(4),
                 LastName            = reader.GetString(5),
