@@ -212,32 +212,32 @@ namespace ErpCli.Data
                 CustomerId      = reader.GetInt32(1),
                 LastPurchaseAt  = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
 
-                FirstName       = reader.IsDBNull(3) ? null : reader.GetString(3),
-                LastName        = reader.IsDBNull(4) ? null : reader.GetString(4),
-                Phone           = reader.IsDBNull(5) ? null : reader.GetString(5),
-                Email           = reader.IsDBNull(6) ? null : reader.GetString(6),
+                FirstName       = reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
+                LastName        = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
+                Phone           = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
+                Email           = reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
 
-                Street          = reader.IsDBNull(7) ? null : reader.GetString(7),
-                Number          = reader.IsDBNull(8) ? null : reader.GetString(8),
-                PostalCode      = reader.IsDBNull(9) ? null : reader.GetString(9),
-                City            = reader.IsDBNull(10) ? null : reader.GetString(10),
-                Country         = reader.IsDBNull(11) ? null : reader.GetString(11)
+                Street          = reader.IsDBNull(7) ? string.Empty : reader.GetString(7),
+                Number          = reader.IsDBNull(8) ? string.Empty : reader.GetString(8),
+                PostalCode      = reader.IsDBNull(9) ? string.Empty : reader.GetString(9),
+                City            = reader.IsDBNull(10) ? string.Empty : reader.GetString(10),
+                Country         = reader.IsDBNull(11) ? string.Empty : reader.GetString(11)
             };
         }
         private static void BindAddressParameters(SqlCommand cmd, Customer c)
         {
-            cmd.Parameters.AddWithValue("@Street", (object?)c.Street ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@Number", (object?)c.Number ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@PostalCode", (object?)c.PostalCode ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@City", (object?)c.City ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@Country", (object?)c.Country ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@Street", c.Street ?? string.Empty);
+            cmd.Parameters.AddWithValue("@Number", c.Number ?? string.Empty);
+            cmd.Parameters.AddWithValue("@PostalCode", c.PostalCode ?? string.Empty);
+            cmd.Parameters.AddWithValue("@City", c.City ?? string.Empty);
+            cmd.Parameters.AddWithValue("@Country", c.Country ?? string.Empty);
         }
         private static void BindPersonParameters(SqlCommand cmd, Customer c)
         {
-            cmd.Parameters.AddWithValue("@FirstName", (object?)c.FirstName ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@LastName", (object?)c.LastName ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@Phone", (object?)c.Phone ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@Email", (object?)c.Email ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@FirstName", c.FirstName ?? string.Empty);
+            cmd.Parameters.AddWithValue("@LastName", c.LastName ?? string.Empty);
+            cmd.Parameters.AddWithValue("@Phone", c.Phone ?? string.Empty);
+            cmd.Parameters.AddWithValue("@Email", c.Email ?? string.Empty);
         }
     }
 
