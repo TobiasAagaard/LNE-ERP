@@ -1,5 +1,6 @@
 using ErpCli.Models;
 using Microsoft.Data.SqlClient;
+using Org.BouncyCastle.Pkix;
 
 namespace ErpCli.Data
 {
@@ -40,11 +41,34 @@ namespace ErpCli.Data
         public void AddSalesOrderHeader(SalesOrderHeader SalesOrderHeader)
         {
             using SqlConnection connection = GetConnection();
-            SqlCommand cmd = connection.CreateCommand();
-            cmd.CommandText = @"INSERT INTO SalesOrderHeaders (OrderCreatedAt, OrderCompletedAt, CustomerId, Status)
-                                VALUES (@OrderCreatedAt, @OrderCompletedAt, @CustomerId, @Status)";
-            BindHeaderParameters(cmd, SalesOrderHeader);
-            cmd.ExecuteNonQuery();
+            using SqlTransaction transaction = connection.BeginTransaction();
+
+            try
+            {
+                SqlCommand cmd = connection.CreateCommand();
+                cmd.Transaction = transaction;
+                cmd.CommandText = @"INSERT INTO SalesOrderHeaders (OrderCreatedAt, OrderCompletedAt, CustomerId, Status)
+                                    VALUES (@OrderCreatedAt, @OrderCompletedAt, @CustomerId, @Status)";
+                BindHeaderParameters(cmd, SalesOrderHeader);
+                cmd.ExecuteNonQuery();
+
+                using SqlCommand customerCmd = connection.CreateCommand();
+                customerCmd.Transaction = transaction;
+                customerCmd.CommandText = @"UPDATE c
+                                            SET c.LastPurchaseAt = @LastPurchaseAt
+                                            FROM Customers c
+                                            INNER JOIN Persons p ON p.Id = c.PersonId
+                                            WHERE c.Id = @id;";
+                customerCmd.Parameters.AddWithValue("@LastPurchaseAt", DateTime.Now);
+                customerCmd.Parameters.AddWithValue("@id", SalesOrderHeader.CustomerId);
+                customerCmd.ExecuteNonQuery();
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
         public void UpdateSalesOrderHeader(SalesOrderHeader editSalesOrderHeader)
         {
