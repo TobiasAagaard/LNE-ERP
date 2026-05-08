@@ -31,7 +31,7 @@ namespace ErpCli.Views
 
             Form<OrderLine> form = new();
 
-            form.SearchBox("Produkt", nameof(orderLine.Product), term =>
+            form.SearchBox("Produkt", nameof(orderLine.Product.Name), term =>
                 Database.Instance.GetProducts()
                     .Where(p =>
                         SearchHelper.MatchSearchTerm(p.Name, term) ||
