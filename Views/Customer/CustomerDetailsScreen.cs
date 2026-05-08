@@ -21,7 +21,7 @@ namespace ErpCli.Views
             Console.WriteLine("Adresse:");
             Console.WriteLine("{0} {1}", customer.Street, customer.Number);
             Console.WriteLine("{0} {1}", customer.City, customer.Country);
-            Console.WriteLine("Sidste Køb: {0:dd-MM-yyyy}", customer.LastPurchaseAt);
+            Console.WriteLine("Sidste Køb: {0}", customer.LastPurchaseAt?.ToString("dd-MM-yyyy") ?? "Aldrig");
 
 //TODO K5: 
             //Console.WriteLine("Tryk på F2 for at redigere kundens detaljer");

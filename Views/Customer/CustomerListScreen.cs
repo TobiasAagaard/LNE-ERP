@@ -1,5 +1,6 @@
 ﻿using ErpCli.Models;
 using ErpCli.Data;
+using ErpCli.Helpers;
 using TECHCOOL.UI;
 
 namespace ErpCli.Views;
@@ -32,7 +33,19 @@ public class CustomerListScreen : Screen
         listPage.AddColumn("Telefon", nameof(Customer.Phone), 15);
         listPage.AddColumn("Email", nameof(Customer.Email), 30);
 
-        List<Customer> customers = Database.Instance.GetAllCustomers();
+        List<Customer> customers;
+        try
+        {
+            customers = Database.Instance.GetAllCustomers();
+        }
+        catch (Exception ex)
+        {
+            ExceptionHelper.ExceptionText(ex, "Fejl ved indlæsning af kunder");
+            Console.ReadKey(true);
+            Quit();
+            return;
+        }
+
         foreach (Customer model in customers)
         {
             listPage.Add(model);

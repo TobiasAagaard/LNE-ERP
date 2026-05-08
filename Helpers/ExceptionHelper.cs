@@ -2,7 +2,7 @@ namespace ErpCli.Helpers
 {
     public static class ExceptionHelper
     {
-        public static void ExceptioText(Exception ex, string contextMessage)
+        public static void ExceptionText(Exception ex, string contextMessage)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"{contextMessage}");

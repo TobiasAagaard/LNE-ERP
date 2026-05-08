@@ -82,7 +82,8 @@ namespace ErpCli.Data
                 customerCmd.CommandText = @"INSERT INTO Customers (PersonId, LastPurchaseAt)
                                             VALUES (@PersonId, @LastPurchaseAt);";
                 customerCmd.Parameters.Add("@PersonId", SqlDbType.Int).Value = personId;
-                customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value = customer.LastPurchaseAt;
+                customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value =
+                    (object?)customer.LastPurchaseAt ?? DBNull.Value;
 
                 customerCmd.ExecuteNonQuery();
 
@@ -113,7 +114,8 @@ namespace ErpCli.Data
                                             FROM Customers c
                                             INNER JOIN Persons p ON p.Id = c.PersonId
                                             WHERE p.Id = @id;";
-                customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value = updatedCustomer.LastPurchaseAt;
+                customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value =
+                    (object?)updatedCustomer.LastPurchaseAt ?? DBNull.Value;
                 customerCmd.Parameters.Add("@id", SqlDbType.Int).Value = updatedCustomer.Id;
 
                 customerCmd.ExecuteNonQuery();
@@ -208,7 +210,7 @@ namespace ErpCli.Data
             {
                 Id      = reader.GetInt32(0),
                 CustomerId      = reader.GetInt32(1),
-                LastPurchaseAt  = reader.GetDateTime(2),
+                LastPurchaseAt  = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
 
                 FirstName       = reader.IsDBNull(3) ? null : reader.GetString(3),
                 LastName        = reader.IsDBNull(4) ? null : reader.GetString(4),

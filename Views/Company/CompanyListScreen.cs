@@ -39,7 +39,7 @@ public class CompanyListScreen : Screen
         }
         catch (Exception ex)
         {
-            ExceptionHelper.ExceptioText(ex, "Fejl ved indlæsning af virksomheder");
+            ExceptionHelper.ExceptionText(ex, "Fejl ved indlæsning af virksomheder");
             Console.ReadKey(true);
             Quit();
             return;
