@@ -1,5 +1,6 @@
 using TECHCOOL.UI;
 using ErpCli.Models;
+using ErpCli.Helpers;
 using ErpCli.Data;
 
 namespace ErpCli.Views
@@ -33,10 +34,10 @@ namespace ErpCli.Views
             form.SearchBox("Produkt", nameof(orderLine.Product), term =>
                 Database.Instance.GetProducts()
                     .Where(p =>
-                        (p.Name ?? "").Contains(term, StringComparison.OrdinalIgnoreCase) ||
-                        (p.ItemNumber ?? "").Contains(term, StringComparison.OrdinalIgnoreCase) ||
-                        (p.Id.ToString().Contains(term)))
-                    .Select(p => ($"{p.Name} {p.ItemNumber}", (object)p))
+                        SearchHelper.MatchSearchTerm(p.Name, term) ||
+                        SearchHelper.MatchSearchTerm(p.ItemNumber, term) ||
+                        SearchHelper.MatchSearchTerm(p.Id.ToString(), term))
+                    .Select(p => ($"{p.Name} - {p.ItemNumber}", (object)p))
                     .ToList());
             form.DoubleBox("Antal", nameof(orderLine.Quantity));
 
