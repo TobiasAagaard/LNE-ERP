@@ -25,7 +25,7 @@ public class CompanyListScreen : Screen
        
         listPage.AddKey(ConsoleKey.F1, CreateNewCompany);
         listPage.AddKey(ConsoleKey.F2, EditCompany);
-        listPage.AddKey(ConsoleKey.F5, DeleteCompany);
+        listPage.AddKey(ConsoleKey.F5, RemoveCompany);
 
 
         listPage.AddColumn("Virksomhed", nameof(Company.Name), 20);
@@ -71,7 +71,7 @@ public class CompanyListScreen : Screen
         Screen.Display(new CompanyEditScreen(company));
     }
 
-    void DeleteCompany(Company company)
+    void RemoveCompany(Company company)
     {
         Database.Instance.DeleteCompany(company.Id);
         Screen.Clear();
