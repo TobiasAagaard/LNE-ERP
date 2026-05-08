@@ -206,7 +206,7 @@ namespace ErpCli.Data
         {
             return new Customer
             {
-                Id      = reader.GetInt32(0),
+                Id              = reader.GetInt32(0),
                 CustomerId      = reader.GetInt32(1),
                 LastPurchaseAt  = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
 
