@@ -49,10 +49,15 @@ namespace ErpCli.Views
                 
                 if (salesOrderHeader.OrderNumber != 0)
                 {
+                    if (salesOrderHeader.Status == SalesOrderHeader.OrderStatus.Færdig)
+                        salesOrderHeader.OrderCompletedAt = DateTime.Now;
+
                     Database.Instance.UpdateSalesOrderHeader(salesOrderHeader);
                 }
                 else
                 {
+                    salesOrderHeader.OrderCreatedAt = DateTime.Now;
+                    salesOrderHeader.OrderCompletedAt = DateTime.Now;
                     Database.Instance.AddSalesOrderHeader(salesOrderHeader);
                 }
                 Console.WriteLine("Ændringerne blev gemt");
