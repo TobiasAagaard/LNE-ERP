@@ -23,22 +23,24 @@ The application connects to SQL Server using SQL authentication, so the server m
      -p 1433:1433 --name erp-sql -d mcr.microsoft.com/mssql/server:2022-latest
    ```
 
-2. Connect with your SQL client and create a database for the project, for example:
+2. Connect with your SQL client and run [`Sql/FullScript.sql`](Sql/FullScript.sql). It creates the `ERP_CLI` database and every table in the correct order, so this single script is all you need to get a fresh schema up and running.
 
-   ```sql
-   CREATE DATABASE ErpCli;
-   ```
-
-3. Run the scripts in [`Sql/`](Sql/) against the new database **in numeric order** — the files are prefixed (`00_`, `01_`, …) because later tables reference earlier ones via foreign keys:
+   If you'd rather run the migrations step by step, the individual scripts are also available in [`Sql/`](Sql/) and must be executed **in numeric order** — the files are prefixed (`00_`, `01_`, …) because later tables reference earlier ones via foreign keys:
 
    ```
-   00_Companies.sql
-   01_Products.sql
-   02_Addresses.sql
+   00_Addresses.sql
+   01_Companies.sql
+   02_Products.sql
    03_Persons.sql
    04_Customers.sql
    05_SalesOrderHeaders.sql
    06_SalesOrderLines.sql
+   ```
+
+   In that case, create the database yourself first:
+
+   ```sql
+   CREATE DATABASE ERP_CLI;
    ```
 
 
@@ -67,7 +69,7 @@ The application connects to SQL Server using SQL authentication, so the server m
        "DataSource": "localhost",
        "UserId": "sa",
        "Password": "<YourPassword>",
-       "InitialCatalog": "ErpCli"
+       "InitialCatalog": "ERP_CLI"
      }
    }
    ```
