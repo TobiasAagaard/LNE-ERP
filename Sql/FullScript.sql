@@ -1,17 +1,26 @@
-CREATE DATABASE IF NOT EXISTS ERP_CLI
+IF DB_ID('ERP_CLI') IS NULL
+BEGIN
+    CREATE DATABASE ERP_CLI;
+END
 GO
 USE ERP_CLI
+GO
 
-CREATE TABLE IF NOT EXISTS Addresses (
-	Id				INT				IDENTITY(1,1) PRIMARY KEY,
-	Street			NVARCHAR(100)	NOT NULL,
-	Number			NVARCHAR(50)	NOT NULL,
-	PostalCode		NVARCHAR(20)	NOT NULL,
-	City			NVARCHAR(50)	NOT NULL,
+IF OBJECT_ID('Addresses', 'U') IS NULL
+BEGIN
+    CREATE TABLE Addresses (
+        Id              INT             IDENTITY(1,1) PRIMARY KEY,
+        Street          NVARCHAR(100)   NOT NULL,
+        Number          NVARCHAR(50)    NOT NULL,
+        PostalCode      NVARCHAR(20)    NOT NULL,
+        City            NVARCHAR(50)    NOT NULL,
 	Country			NVARCHAR(50)	NOT NULL
 );
+END
 
-CREATE TABLE IF NOT EXISTS Companies (
+IF OBJECT_ID('Companies', 'U') IS NULL
+BEGIN
+    CREATE TABLE Companies (
 	Id				INT				IDENTITY(1,1) PRIMARY KEY,
 	AddressId		INT				NOT NULL,
 	Name			NVARCHAR(200)	NOT NULL,
@@ -20,8 +29,11 @@ CREATE TABLE IF NOT EXISTS Companies (
 	FOREIGN KEY (AddressId) REFERENCES Addresses(Id)
 		ON DELETE CASCADE
 );
+END
 
-CREATE TABLE IF NOT EXISTS Products (
+IF OBJECT_ID('Products', 'U') IS NULL
+BEGIN
+    CREATE TABLE Products (
     Id              INT             IDENTITY(1,1) PRIMARY KEY,
     ItemNumber      NVARCHAR(50)    NOT NULL,
     Name            NVARCHAR(200)   NOT NULL,
@@ -32,8 +44,11 @@ CREATE TABLE IF NOT EXISTS Products (
     StockQuantity   FLOAT           NOT NULL DEFAULT 0,
     Unit            INT             NOT NULL
 );
+END
 
-CREATE TABLE IF NOT EXISTS Persons (
+IF OBJECT_ID('Persons', 'U') IS NULL
+BEGIN
+    CREATE TABLE Persons (
 	Id				INT				IDENTITY(1,1) PRIMARY KEY,
 	FirstName		NVARCHAR(100)	NOT NULL,
 	LastName		NVARCHAR(100)	NOT NULL,
@@ -43,8 +58,11 @@ CREATE TABLE IF NOT EXISTS Persons (
 	FOREIGN KEY (AddressId) REFERENCES Addresses(Id)
 		ON DELETE CASCADE
 );
+END
 
-CREATE TABLE IF NOT EXISTS Customers (
+IF OBJECT_ID('Customers', 'U') IS NULL
+BEGIN
+    CREATE TABLE Customers (
 	Id		        INT				PRIMARY KEY IDENTITY(1000,1),
     PersonId		INT				NOT NULL,
 	LastPurchaseAt	DATETIME2		NULL,
@@ -52,8 +70,11 @@ CREATE TABLE IF NOT EXISTS Customers (
 	FOREIGN KEY (PersonId) REFERENCES Persons(Id)
 		ON DELETE CASCADE
 );
+END
 
-CREATE TABLE IF NOT EXISTS SalesOrderHeaders (
+IF OBJECT_ID('SalesOrderHeaders', 'U') IS NULL
+BEGIN
+    CREATE TABLE SalesOrderHeaders (
 	OrderNumber			INT				IDENTITY(1,1) PRIMARY KEY,
 	OrderCreatedAt		DATETIME2		NOT NULL,
 	OrderCompletedAt	DATETIME2		NULL,
@@ -62,8 +83,11 @@ CREATE TABLE IF NOT EXISTS SalesOrderHeaders (
     
 	FOREIGN KEY (CustomerId) REFERENCES Customers(Id)
 );
+END
 
-CREATE TABLE IF NOT EXISTS SalesOrderLines (
+IF OBJECT_ID('SalesOrderLines', 'U') IS NULL
+BEGIN
+    CREATE TABLE SalesOrderLines (
 	Id				INT				IDENTITY(1,1) PRIMARY KEY,
 	OrderNumber		INT				NOT NULL,
 	ProductId		INT				NOT NULL,
@@ -72,3 +96,4 @@ CREATE TABLE IF NOT EXISTS SalesOrderLines (
 	FOREIGN KEY (OrderNumber) REFERENCES SalesOrderHeaders(OrderNumber) ON DELETE CASCADE,
 	FOREIGN KEY (ProductId) REFERENCES Products(Id)
 );
+END

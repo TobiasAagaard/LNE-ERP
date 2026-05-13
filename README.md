@@ -40,7 +40,7 @@ The application connects to SQL Server using SQL authentication, so the server m
    In that case, create the database yourself first:
 
    ```sql
-   CREATE DATABASE ErpCli;
+   CREATE DATABASE ERP_CLI;
    ```
 
 
