@@ -38,6 +38,7 @@ namespace ErpCli.Views
                     .Select(c => ($"{c.CustomerId} {c.FullName}", (object)c))
                     .ToList());
             form.SelectBox("Status", nameof(salesOrderHeader.Status));
+            
             foreach (var s in Enum.GetValues<SalesOrderHeader.OrderStatus>())
             {
                 form.AddOption("Status", s.ToString(), s);
