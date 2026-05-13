@@ -9,7 +9,38 @@ The application is designed as a foundation that can be extended to other indust
 ### Prerequisites
 
 - [.NET 10 SDK (preview)](https://dotnet.microsoft.com/download/dotnet/10.0)
+- A running [Microsoft SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) instance (2019 or newer). Developer or Express editions both work. On macOS/Linux the easiest option is the [official `mssql/server` Docker image](https://hub.docker.com/_/microsoft-mssql-server).
 - A local clone of our fork of [TECHCOOL](https://github.com/TobiasAagaard/TECHCOOL). The project references the fork as a sibling folder rather than the TECHCOOL NuGet package, so cloning is required for the full experience and all features to work.
+
+### Set up the database
+
+The application connects to SQL Server using SQL authentication, so the server must allow mixed-mode logins.
+
+1. Install and start SQL Server, then enable **SQL Server and Windows Authentication mode** (mixed mode). For Docker:
+
+   ```bash
+   docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<YourPassword>" \
+     -p 1433:1433 --name erp-sql -d mcr.microsoft.com/mssql/server:2022-latest
+   ```
+
+2. Connect with your SQL client and create a database for the project, for example:
+
+   ```sql
+   CREATE DATABASE ErpCli;
+   ```
+
+3. Run the scripts in [`Sql/`](Sql/) against the new database **in numeric order** — the files are prefixed (`00_`, `01_`, …) because later tables reference earlier ones via foreign keys:
+
+   ```
+   00_Companies.sql
+   01_Products.sql
+   02_Addresses.sql
+   03_Persons.sql
+   04_Customers.sql
+   05_SalesOrderHeaders.sql
+   06_SalesOrderLines.sql
+   ```
+
 
 ### Build and run
 
@@ -28,20 +59,24 @@ The application is designed as a foundation that can be extended to other indust
    git clone https://github.com/TobiasAagaard/ERP-CLI ERP-CLI
    ```
 
-3. Create an `appsettings.Local.json` file in the root of `ERP-CLI/` with your database connection details:
+3. Create an `appsettings.Local.json` file in the root of `ERP-CLI/` with the connection details for the database you set up above:
 
    ```json
    {
      "Database": {
-       "DataSource": "<server>",
-       "UserId": "<user>",
-       "Password": "<password>",
-       "InitialCatalog": "<database>"
+       "DataSource": "localhost",
+       "UserId": "sa",
+       "Password": "<YourPassword>",
+       "InitialCatalog": "ErpCli"
      }
    }
    ```
 
-   This file is git-ignored so each developer can keep their own local credentials.
+   - `DataSource` — host (and optional `,port` / `\instance`) of your SQL Server, e.g. `localhost`, `localhost,1433`, or `localhost\SQLEXPRESS`.
+   - `UserId` / `Password` — SQL login credentials.
+   - `InitialCatalog` — the database created in *Set up the database*.
+
+   This file is git-ignored so each developer can keep their own local credentials. The connection always uses `TrustServerCertificate=true`, so a self-signed dev certificate is fine.
 
 4. From inside `ERP-CLI/`, build and run:
 
