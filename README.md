@@ -28,9 +28,9 @@ The application connects to SQL Server using SQL authentication, so the server m
    If you'd rather run the migrations step by step, the individual scripts are also available in [`Sql/`](Sql/) and must be executed **in numeric order** — the files are prefixed (`00_`, `01_`, …) because later tables reference earlier ones via foreign keys:
 
    ```
-   00_Companies.sql
-   01_Products.sql
-   02_Addresses.sql
+   00_Addresses.sql
+   01_Companies.sql
+   02_Products.sql
    03_Persons.sql
    04_Customers.sql
    05_SalesOrderHeaders.sql
