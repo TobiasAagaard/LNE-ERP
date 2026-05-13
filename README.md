@@ -9,7 +9,7 @@ The application is designed as a foundation that can be extended to other indust
 ### Prerequisites
 
 - [.NET 10 SDK (preview)](https://dotnet.microsoft.com/download/dotnet/10.0)
-- A running [Microsoft SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) instance (2019 or newer). Developer or Express editions both work. On macOS/Linux the easiest option is the [official `mssql/server` Docker image](https://hub.docker.com/_/microsoft-mssql-server).
+- A running [Microsoft SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
 - A local clone of our fork of [TECHCOOL](https://github.com/TobiasAagaard/TECHCOOL). The project references the fork as a sibling folder rather than the TECHCOOL NuGet package, so cloning is required for the full experience and all features to work.
 
 ### Set up the database
