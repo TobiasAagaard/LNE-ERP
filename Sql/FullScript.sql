@@ -27,7 +27,6 @@ BEGIN
 	Currency		NVARCHAR(10)	NOT NULL,
 
 	FOREIGN KEY (AddressId) REFERENCES Addresses(Id)
-		ON DELETE CASCADE
 );
 END
 
@@ -56,7 +55,7 @@ BEGIN
 	Email			NVARCHAR(254)	NOT NULL,
 	AddressId		INT				NOT NULL,
 	FOREIGN KEY (AddressId) REFERENCES Addresses(Id)
-		ON DELETE CASCADE
+		
 );
 END
 
