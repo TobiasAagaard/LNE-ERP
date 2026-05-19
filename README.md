@@ -19,7 +19,7 @@ The application connects to SQL Server using SQL authentication, so the server m
 1. Install and start SQL Server, then enable **SQL Server and Windows Authentication mode** (mixed mode). For Docker:
 
    ```bash
-   docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<YourPassword>" \
+   docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<Your@Password123>" \
      -p 1433:1433 --name erp-sql -d mcr.microsoft.com/mssql/server:2022-latest
    ```
 
