@@ -3,6 +3,7 @@
 	OrderNumber		INT				NOT NULL,
 	ProductId		INT				NOT NULL,
 	Quantity		FLOAT			NOT NULL,
+
 	FOREIGN KEY (OrderNumber) REFERENCES SalesOrderHeaders(OrderNumber) ON DELETE CASCADE,
 	FOREIGN KEY (ProductId) REFERENCES Products(Id)
 );

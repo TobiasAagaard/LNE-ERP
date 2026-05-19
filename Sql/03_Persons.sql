@@ -1,4 +1,4 @@
-﻿CREATE TABLE Persons (
+﻿ CREATE TABLE Persons (
 	Id				INT				IDENTITY(1,1) PRIMARY KEY,
 	FirstName		NVARCHAR(100)	NOT NULL,
 	LastName		NVARCHAR(100)	NOT NULL,
@@ -6,5 +6,5 @@
 	Email			NVARCHAR(254)	NOT NULL,
 	AddressId		INT				NOT NULL,
 	FOREIGN KEY (AddressId) REFERENCES Addresses(Id)
-		ON DELETE CASCADE
+		
 );

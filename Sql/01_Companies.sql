@@ -5,5 +5,4 @@ CREATE TABLE Companies (
 	Currency		NVARCHAR(10)	NOT NULL,
 
 	FOREIGN KEY (AddressId) REFERENCES Addresses(Id)
-		ON DELETE CASCADE
 );
