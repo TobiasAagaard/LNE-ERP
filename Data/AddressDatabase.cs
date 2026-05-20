@@ -1,4 +1,4 @@
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using ErpCli.Models;
 
 namespace ErpCli.Data;
@@ -34,9 +34,9 @@ public partial class Database
             throw new InvalidOperationException("Failed to insert address and retrieve new ID.");
         }
         return Convert.ToInt32(insertResult);
-        } catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601) // Unique constraint violation
+        } catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601) 
         {
-            //Unique constraint violation, likely due to a concurrent insert. Try to find the address again.
+            //Unique constraint, due to concurrent insert race condition. Try to find the address again.
 
             result = find.ExecuteScalar();
             if (result is int retryId) return retryId;

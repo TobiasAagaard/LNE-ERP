@@ -1,5 +1,6 @@
 using ErpCli.Models;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace ErpCli.Data
 {
@@ -43,22 +44,18 @@ namespace ErpCli.Data
         public void AddCompany(Company company)
         {
             using SqlConnection connection = GetConnection();
-            using SqlTransaction transaction = connection.BeginTransaction();
+            using SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.Serializable);
 
-            SqlCommand addrCmd = connection.CreateCommand();
-            addrCmd.Transaction = transaction;
-            addrCmd.CommandText = @"INSERT INTO Addresses (Street, Number, PostalCode, City, Country)
-                                    OUTPUT INSERTED.Id
-                                    VALUES (@street, @number, @postalCode, @city, @country) ";
-            BindAddressParameters(addrCmd, company);
-            int addressId = (int)addrCmd.ExecuteScalar();
+            int addressId = GetOrCreateAddressId(company.Address, connection, transaction);
 
-            SqlCommand compCmd = connection.CreateCommand();
-            compCmd.Transaction = transaction;
-            compCmd.CommandText = @"INSERT INTO Companies (Name, Currency, AddressId)
+            using SqlCommand command = connection.CreateCommand();
+            command.Transaction = transaction;
+            command.CommandText = @"INSERT INTO COMPANIES (Name, Currency, AddressId)
                                     VALUES (@name, @currency, @addressId)";
-            BindCompanyParameters(compCmd, company, addressId);
-            compCmd.ExecuteNonQuery();
+            command.Parameters.AddWithValue("@name", company.Name);
+            command.Parameters.AddWithValue("@currency", company.Currency);
+            command.Parameters.AddWithValue("@addressId", addressId);
+            command.ExecuteNonQuery();
             transaction.Commit();
         }
 
@@ -122,19 +119,13 @@ namespace ErpCli.Data
             };
         }
 
-        private static void BindAddressParameters(SqlCommand cmd, Company company)
+        private static void BindAddressParameters(SqlCommand command, Company company)
         {
-            cmd.Parameters.AddWithValue("@street", company.Street);
-            cmd.Parameters.AddWithValue("@number", company.Number);
-            cmd.Parameters.AddWithValue("@postalCode", company.PostalCode);
-            cmd.Parameters.AddWithValue("@city", company.City);
-            cmd.Parameters.AddWithValue("@country", company.Country);
-        }
-        private static void BindCompanyParameters(SqlCommand cmd, Company company, int addressId)
-        {
-            cmd.Parameters.AddWithValue("@name", company.Name);
-            cmd.Parameters.AddWithValue("@currency", company.Currency);
-            cmd.Parameters.AddWithValue("@addressId", addressId);
+            command.Parameters.AddWithValue("@street", company.Street);
+            command.Parameters.AddWithValue("@number", company.Number);
+            command.Parameters.AddWithValue("@postalCode", company.PostalCode);
+            command.Parameters.AddWithValue("@city", company.City);
+            command.Parameters.AddWithValue("@country", company.Country);
         }
     }
 
