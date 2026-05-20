@@ -62,46 +62,55 @@ namespace ErpCli.Data
         public void UpdateCompany(Company updatedCompany)
         {
             using SqlConnection connection = GetConnection();
-            using SqlTransaction transaction = connection.BeginTransaction();
+            using SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.Serializable);
 
-            SqlCommand cmd = connection.CreateCommand();
-            cmd.Transaction = transaction;
-            cmd.CommandText = @"UPDATE Addresses
-                                SET Street = @street,
-                                    Number = @number,
-                                    PostalCode = @postalCode,
-                                    City = @city,
-                                    Country = @country
-                                FROM Addresses address
-                                INNER JOIN Companies company ON company.AddressId = address.Id
-                                WHERE company.Id = @id;
+            // Get existing address ID to determine if it can be reused or if a new one must be created.
+            int oldAddressId;
+            using (SqlCommand existing = connection.CreateCommand())
+            {
+                existing.Transaction = transaction;
+                existing.CommandText = @"SELECT AddressId FROM Companies WHERE Id = @id";
+                existing.Parameters.AddWithValue("@id", updatedCompany.Id);
+                object? result = existing.ExecuteScalar();
+                if (result is null)
+                {
+                    transaction.Rollback();
+                    throw new InvalidOperationException($"Company with Id {updatedCompany.Id} does not exist.");
+                }
+                oldAddressId = Convert.ToInt32(result);
+            }
 
-                                UPDATE Companies
-                                SET Name = @name,
-                                    Currency = @currency
-                                WHERE Id = @id";
-            cmd.Parameters.AddWithValue("@id", updatedCompany.Id);
-            cmd.Parameters.AddWithValue("@name", updatedCompany.Name);
-            cmd.Parameters.AddWithValue("@currency", updatedCompany.Currency);
-            BindAddressParameters(cmd, updatedCompany);
-            cmd.ExecuteNonQuery();
+            // Get or create the new address ID. This will handle both cases where the address is unchanged (reusing the same ID) or updated (creating a new address if necessary).
+            int addressId = GetOrCreateAddressId(updatedCompany.Address, connection, transaction);
+
+            using (SqlCommand command = connection.CreateCommand())
+            {
+                command.Transaction = transaction;
+                command.CommandText = @"UPDATE Companies
+                                        SET Name = @name,
+                                            Currency = @currency,
+                                            AddressId = @addressId
+                                        WHERE Id = @id";
+                command.Parameters.AddWithValue("@id", updatedCompany.Id);
+                command.Parameters.AddWithValue("@name", updatedCompany.Name);
+                command.Parameters.AddWithValue("@currency", updatedCompany.Currency);
+                command.Parameters.AddWithValue("@addressId", addressId);
+                if (command.ExecuteNonQuery() == 0)
+                {
+                    transaction.Rollback();
+                    throw new InvalidOperationException($"Company with Id {updatedCompany.Id} could not be updated.");
+                }
+            }
             transaction.Commit();
-          
-            
         }
         public void DeleteCompany(int id)
         {
             using SqlConnection connection = GetConnection();
-            SqlCommand cmd = connection.CreateCommand();
-            cmd.CommandText = @"DELETE company
-                                FROM Companies company
-                                WHERE company.Id = @Id;
-                                DELETE address
-                                FROM Addresses address
-                                LEFT JOIN Companies company ON company.AddressId = address.Id
-                                WHERE company.Id IS NULL";
-            cmd.Parameters.AddWithValue("@Id", id);
-            cmd.ExecuteNonQuery();
+            using SqlCommand command = connection.CreateCommand();
+
+            command.CommandText = @"DELETE FROM Companies WHERE Id = @id";
+            command.Parameters.AddWithValue("@id", id);
+            command.ExecuteNonQuery();
         }
 
         private Company ReadCompany(SqlDataReader reader)
@@ -117,15 +126,6 @@ namespace ErpCli.Data
                 Country = reader.GetString(6),
                 Currency = (Currency)Enum.Parse(typeof(Currency), reader.GetString(7))
             };
-        }
-
-        private static void BindAddressParameters(SqlCommand command, Company company)
-        {
-            command.Parameters.AddWithValue("@street", company.Street);
-            command.Parameters.AddWithValue("@number", company.Number);
-            command.Parameters.AddWithValue("@postalCode", company.PostalCode);
-            command.Parameters.AddWithValue("@city", company.City);
-            command.Parameters.AddWithValue("@country", company.Country);
         }
     }
 
