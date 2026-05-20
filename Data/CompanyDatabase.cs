@@ -62,46 +62,32 @@ namespace ErpCli.Data
         public void UpdateCompany(Company updatedCompany)
         {
             using SqlConnection connection = GetConnection();
-            using SqlTransaction transaction = connection.BeginTransaction();
+            using SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.Serializable);
 
-            SqlCommand cmd = connection.CreateCommand();
-            cmd.Transaction = transaction;
-            cmd.CommandText = @"UPDATE Addresses
-                                SET Street = @street,
-                                    Number = @number,
-                                    PostalCode = @postalCode,
-                                    City = @city,
-                                    Country = @country
-                                FROM Addresses address
-                                INNER JOIN Companies company ON company.AddressId = address.Id
-                                WHERE company.Id = @id;
+            int addressId = GetOrCreateAddressId(updatedCompany.Address, connection, transaction);
 
-                                UPDATE Companies
-                                SET Name = @name,
-                                    Currency = @currency
-                                WHERE Id = @id";
-            cmd.Parameters.AddWithValue("@id", updatedCompany.Id);
-            cmd.Parameters.AddWithValue("@name", updatedCompany.Name);
-            cmd.Parameters.AddWithValue("@currency", updatedCompany.Currency);
-            BindAddressParameters(cmd, updatedCompany);
-            cmd.ExecuteNonQuery();
+            using SqlCommand command = connection.CreateCommand();
+            command.Transaction = transaction;
+            command.CommandText = @"UPDATE Companies
+                                    SET Name = @name,
+                                        Currency = @currency,
+                                        AddressId = @addressId
+                                    WHERE Id = @id"; 
+            command.Parameters.AddWithValue("@id", updatedCompany.Id);
+            command.Parameters.AddWithValue("@name", updatedCompany.Name);
+            command.Parameters.AddWithValue("@currency", updatedCompany.Currency);
+            command.Parameters.AddWithValue("@addressId", addressId);
+            command.ExecuteNonQuery();
             transaction.Commit();
-          
-            
         }
         public void DeleteCompany(int id)
         {
             using SqlConnection connection = GetConnection();
-            SqlCommand cmd = connection.CreateCommand();
-            cmd.CommandText = @"DELETE company
-                                FROM Companies company
-                                WHERE company.Id = @Id;
-                                DELETE address
-                                FROM Addresses address
-                                LEFT JOIN Companies company ON company.AddressId = address.Id
-                                WHERE company.Id IS NULL";
-            cmd.Parameters.AddWithValue("@Id", id);
-            cmd.ExecuteNonQuery();
+            using SqlCommand command = connection.CreateCommand();
+
+            command.CommandText = @"DELETE FROM Companies WHERE Id = @id";
+            command.Parameters.AddWithValue("@id", id);
+            command.ExecuteNonQuery();
         }
 
         private Company ReadCompany(SqlDataReader reader)
@@ -117,16 +103,7 @@ namespace ErpCli.Data
                 Country = reader.GetString(6),
                 Currency = (Currency)Enum.Parse(typeof(Currency), reader.GetString(7))
             };
-        }
-
-        private static void BindAddressParameters(SqlCommand command, Company company)
-        {
-            command.Parameters.AddWithValue("@street", company.Street);
-            command.Parameters.AddWithValue("@number", company.Number);
-            command.Parameters.AddWithValue("@postalCode", company.PostalCode);
-            command.Parameters.AddWithValue("@city", company.City);
-            command.Parameters.AddWithValue("@country", company.Country);
-        }
+        } 
     }
 
 }
