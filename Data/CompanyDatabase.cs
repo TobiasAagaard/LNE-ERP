@@ -1,5 +1,4 @@
 using ErpCli.Models;
-using ErpCli.Helpers;
 using Microsoft.Data.SqlClient;
 
 namespace ErpCli.Data
