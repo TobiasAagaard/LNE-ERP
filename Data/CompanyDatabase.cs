@@ -64,7 +64,7 @@ namespace ErpCli.Data
             using SqlConnection connection = GetConnection();
             using SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.Serializable);
 
-            // Ensure the company exists and capture its currently linked AddressId.
+            // Get existing address ID to determine if it can be reused or if a new one must be created.
             int oldAddressId;
             using (SqlCommand existing = connection.CreateCommand())
             {
@@ -80,7 +80,7 @@ namespace ErpCli.Data
                 oldAddressId = Convert.ToInt32(result);
             }
 
-            // Resolve the address; GetOrCreateAddressId reuses the existing row when unchanged.
+            // Get or create the new address ID. This will handle both cases where the address is unchanged (reusing the same ID) or updated (creating a new address if necessary).
             int addressId = GetOrCreateAddressId(updatedCompany.Address, connection, transaction);
 
             using (SqlCommand command = connection.CreateCommand())
@@ -101,29 +101,6 @@ namespace ErpCli.Data
                     throw new InvalidOperationException($"Company with Id {updatedCompany.Id} could not be updated.");
                 }
             }
-
-            // If the address changed, delete the old one when no other company references it.
-            if (addressId != oldAddressId)
-            {
-                int references;
-                using (SqlCommand countCmd = connection.CreateCommand())
-                {
-                    countCmd.Transaction = transaction;
-                    countCmd.CommandText = @"SELECT COUNT(*) FROM Companies WHERE AddressId = @oldId";
-                    countCmd.Parameters.AddWithValue("@oldId", oldAddressId);
-                    references = Convert.ToInt32(countCmd.ExecuteScalar());
-                }
-
-                if (references == 0)
-                {
-                    using SqlCommand deleteCmd = connection.CreateCommand();
-                    deleteCmd.Transaction = transaction;
-                    deleteCmd.CommandText = @"DELETE FROM Addresses WHERE Id = @oldId";
-                    deleteCmd.Parameters.AddWithValue("@oldId", oldAddressId);
-                    deleteCmd.ExecuteNonQuery();
-                }
-            }
-
             transaction.Commit();
         }
         public void DeleteCompany(int id)
