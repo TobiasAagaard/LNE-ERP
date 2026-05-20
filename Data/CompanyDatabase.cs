@@ -64,20 +64,66 @@ namespace ErpCli.Data
             using SqlConnection connection = GetConnection();
             using SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.Serializable);
 
+            // Ensure the company exists and capture its currently linked AddressId.
+            int oldAddressId;
+            using (SqlCommand existing = connection.CreateCommand())
+            {
+                existing.Transaction = transaction;
+                existing.CommandText = @"SELECT AddressId FROM Companies WHERE Id = @id";
+                existing.Parameters.AddWithValue("@id", updatedCompany.Id);
+                object? result = existing.ExecuteScalar();
+                if (result is null)
+                {
+                    transaction.Rollback();
+                    throw new InvalidOperationException($"Company with Id {updatedCompany.Id} does not exist.");
+                }
+                oldAddressId = Convert.ToInt32(result);
+            }
+
+            // Resolve the address; GetOrCreateAddressId reuses the existing row when unchanged.
             int addressId = GetOrCreateAddressId(updatedCompany.Address, connection, transaction);
 
-            using SqlCommand command = connection.CreateCommand();
-            command.Transaction = transaction;
-            command.CommandText = @"UPDATE Companies
-                                    SET Name = @name,
-                                        Currency = @currency,
-                                        AddressId = @addressId
-                                    WHERE Id = @id"; 
-            command.Parameters.AddWithValue("@id", updatedCompany.Id);
-            command.Parameters.AddWithValue("@name", updatedCompany.Name);
-            command.Parameters.AddWithValue("@currency", updatedCompany.Currency);
-            command.Parameters.AddWithValue("@addressId", addressId);
-            command.ExecuteNonQuery();
+            using (SqlCommand command = connection.CreateCommand())
+            {
+                command.Transaction = transaction;
+                command.CommandText = @"UPDATE Companies
+                                        SET Name = @name,
+                                            Currency = @currency,
+                                            AddressId = @addressId
+                                        WHERE Id = @id";
+                command.Parameters.AddWithValue("@id", updatedCompany.Id);
+                command.Parameters.AddWithValue("@name", updatedCompany.Name);
+                command.Parameters.AddWithValue("@currency", updatedCompany.Currency);
+                command.Parameters.AddWithValue("@addressId", addressId);
+                if (command.ExecuteNonQuery() == 0)
+                {
+                    transaction.Rollback();
+                    throw new InvalidOperationException($"Company with Id {updatedCompany.Id} could not be updated.");
+                }
+            }
+
+            // If the address changed, delete the old one when no other company references it.
+            if (addressId != oldAddressId)
+            {
+                int references;
+                using (SqlCommand countCmd = connection.CreateCommand())
+                {
+                    countCmd.Transaction = transaction;
+                    countCmd.CommandText = @"SELECT COUNT(*) FROM Companies WHERE AddressId = @oldId";
+                    countCmd.Parameters.AddWithValue("@oldId", oldAddressId);
+                    references = Convert.ToInt32(countCmd.ExecuteScalar());
+                }
+
+                if (references == 0)
+                {
+                    using SqlCommand deleteCmd = connection.CreateCommand();
+                    deleteCmd.Transaction = transaction;
+                    deleteCmd.CommandText = @"DELETE FROM Addresses WHERE Id = @oldId";
+                    deleteCmd.Parameters.AddWithValue("@oldId", oldAddressId);
+                    deleteCmd.ExecuteNonQuery();
+                }
+            }
+
             transaction.Commit();
         }
         public void DeleteCompany(int id)
@@ -103,7 +149,7 @@ namespace ErpCli.Data
                 Country = reader.GetString(6),
                 Currency = (Currency)Enum.Parse(typeof(Currency), reader.GetString(7))
             };
-        } 
+        }
     }
 
 }
