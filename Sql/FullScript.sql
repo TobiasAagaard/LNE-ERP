@@ -14,7 +14,11 @@ BEGIN
         Number          NVARCHAR(50)    NOT NULL,
         PostalCode      NVARCHAR(20)    NOT NULL,
         City            NVARCHAR(50)    NOT NULL,
-	Country			NVARCHAR(50)	NOT NULL
+		Country			NVARCHAR(50)	NOT NULL,
+
+		CONSTRAINT UQ_Addresses_Full
+		UNIQUE (Street, [Number], PostalCode, City, Country)
+
 );
 END
 
