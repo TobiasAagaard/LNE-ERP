@@ -75,7 +75,7 @@ namespace ErpCli.Data
                 if (result is null)
                 {
                     transaction.Rollback();
-                    throw new InvalidOperationException($"Company with Id {updatedCompany.Id} does not exist.");
+                    throw new InvalidOperationException($"Virksomheden med Id {updatedCompany.Id} findes ikke.");
                 }
                 oldAddressId = Convert.ToInt32(result);
             }
@@ -98,19 +98,44 @@ namespace ErpCli.Data
                 if (command.ExecuteNonQuery() == 0)
                 {
                     transaction.Rollback();
-                    throw new InvalidOperationException($"Company with Id {updatedCompany.Id} could not be updated.");
+                    throw new InvalidOperationException($"Virksomheden med Id {updatedCompany.Id} findes ikke.");
                 }
             }
             transaction.Commit();
         }
-        public void DeleteCompany(int id)
+        public void DeleteCompany(int id )
         {
             using SqlConnection connection = GetConnection();
-            using SqlCommand command = connection.CreateCommand();
+            using SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.Serializable);
 
-            command.CommandText = @"DELETE FROM Companies WHERE Id = @id";
-            command.Parameters.AddWithValue("@id", id);
-            command.ExecuteNonQuery();
+            int oldAddressId;
+            using (SqlCommand existing = connection.CreateCommand())
+            {
+                existing.Transaction = transaction;
+                existing.CommandText = @"SELECT AddressId FROM Companies WHERE Id = @id";
+                existing.Parameters.AddWithValue("@id", id);
+                object? result = existing.ExecuteScalar();
+
+                if (result is null)
+                {
+                    transaction.Rollback();
+                    throw new InvalidOperationException("Virksomheden findes ikke.");
+                }
+                oldAddressId = Convert.ToInt32(result);
+            }
+
+            using (SqlCommand command = connection.CreateCommand())
+            {
+                command.Transaction = transaction;
+                command.CommandText = @"DELETE FROM Companies WHERE Id = @id";
+                command.Parameters.AddWithValue("@id", id);
+                if (command.ExecuteNonQuery() == 0)
+                {
+                    throw new InvalidOperationException("Virksomheden findes ikke.");
+                }
+                DeleteAddressIfNotReferenced(oldAddressId, connection, transaction);
+            }
+            transaction.Commit();
         }
 
         private Company ReadCompany(SqlDataReader reader)

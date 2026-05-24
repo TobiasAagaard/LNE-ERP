@@ -45,6 +45,17 @@ public partial class Database
         }
     }
 
+    public int DeleteAddressIfNotReferenced(int addressId, SqlConnection connection, SqlTransaction transaction)
+    {
+        using SqlCommand command = connection.CreateCommand();
+        command.Transaction = transaction;
+        command.CommandText = @"DELETE FROM Addresses
+                                WHERE Id = @id
+                                AND NOT EXISTS (SELECT 1 FROM Companies WHERE AddressId = @id)";
+        command.Parameters.AddWithValue("@id", addressId);
+        return command.ExecuteNonQuery();
+    }
+
     private static void BindAddressParameters(SqlCommand cmd, Address address)
     {
         cmd.Parameters.AddWithValue("@street", address.Street);
