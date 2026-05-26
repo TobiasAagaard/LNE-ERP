@@ -51,7 +51,7 @@ docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<Your@Password123>" \
 dotnet build
 dotnet run
 ```
-> **Note:** On startup, the app automatically creates the `ERP_CLI` database (if it doesn’t exist) and runs all migrations from [`Migrations/`](Migrations/) to set up the schema.
+> **Note:** On startup, the app automatically creates the `ERP_CLI` database (if it doesn’t exist) and runs the migrations from [`Migrations/`](Migrations/) to set up the schema.
 
 ## Architecture
 
