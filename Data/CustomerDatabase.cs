@@ -1,4 +1,5 @@
 ﻿using ErpCli.Models;
+using ErpCli.Helpers;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
@@ -89,10 +90,13 @@ namespace ErpCli.Data
 
                 transaction.Commit();
             }
-            catch
+            catch (Exception ex)
             {
                 transaction.Rollback();
-                throw;
+                ExceptionHelper.ExceptionText(ex, "Fejl ved oprettelse af kunde");
+                Console.ReadKey(true);
+                return;
+                
             }
         }
 
@@ -151,10 +155,12 @@ namespace ErpCli.Data
 
                 transaction.Commit();
             }
-            catch
+            catch (Exception ex)
             {
                 transaction.Rollback();
-                throw;
+                ExceptionHelper.ExceptionText(ex, "Fejl ved opdatering af kunde");
+                Console.ReadKey(true);
+                return;
             }
         }
 
@@ -192,10 +198,12 @@ namespace ErpCli.Data
 
                 transaction.Commit();
             }
-            catch
+            catch (Exception ex)
             {
                 transaction.Rollback();
-                throw;
+                ExceptionHelper.ExceptionText(ex, "Fejl ved sletning af kunde");
+                Console.ReadKey(true);
+                return;
             }
         }
 
