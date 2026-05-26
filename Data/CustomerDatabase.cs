@@ -65,6 +65,7 @@ namespace ErpCli.Data
                 personCmd.CommandText = @"INSERT INTO Persons (FirstName, LastName, Phone, Email, AddressId)
                                         VALUES (@FirstName, @LastName, @Phone, @Email, @AddressId);
                                         SELECT SCOPE_IDENTITY();";
+                                        
                 personCmd.Parameters.Add("@FirstName", SqlDbType.NVarChar).Value = customer.FirstName;
                 personCmd.Parameters.Add("@LastName", SqlDbType.NVarChar).Value = customer.LastName;
                 personCmd.Parameters.Add("@Phone", SqlDbType.NVarChar).Value = customer.Phone;
@@ -105,12 +106,14 @@ namespace ErpCli.Data
                 int oldAddressId;
                 using SqlCommand existing = connection.CreateCommand();
                 existing.Transaction = transaction;
-                existing.CommandText = @"SELECT AddressId FROM Persons WHERE Id = @id";
+                existing.CommandText = @"SELECT p.AddressId
+                                         FROM Customers c
+                                         INNER JOIN Persons p ON p.Id = c.PersonId
+                                         WHERE p.Id = @id";
                 existing.Parameters.Add("@id", SqlDbType.Int).Value = updatedCustomer.Id;
                 object? result = existing.ExecuteScalar();
                 if (result is null)
                 {
-                    transaction.Rollback();
                     throw new InvalidOperationException($"Kunden med Id {updatedCustomer.Id} findes ikke.");
                 }
                 oldAddressId = Convert.ToInt32(result);
@@ -128,7 +131,10 @@ namespace ErpCli.Data
                     (object?)updatedCustomer.LastPurchaseAt ?? DBNull.Value;
                 customerCmd.Parameters.Add("@id", SqlDbType.Int).Value = updatedCustomer.Id;
 
-                customerCmd.ExecuteNonQuery();
+                if (customerCmd.ExecuteNonQuery() == 0)
+                {
+                    throw new InvalidOperationException($"Kunden med Id {updatedCustomer.Id} findes ikke.");
+                }
 
                 using SqlCommand personCmd = connection.CreateCommand();
                 personCmd.Transaction = transaction;
