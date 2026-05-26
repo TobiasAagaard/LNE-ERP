@@ -55,7 +55,7 @@ namespace ErpCli.Views
                 }
                 else
                 {
-                    Database.Instance.AddCustomer(customer);
+                    Database.Instance.CreateCustomer(customer);
                 }
                 Console.WriteLine("Ændringerne blev gemt");
             }

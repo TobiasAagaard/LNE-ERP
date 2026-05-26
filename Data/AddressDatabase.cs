@@ -51,7 +51,8 @@ public partial class Database
         command.Transaction = transaction;
         command.CommandText = @"DELETE FROM Addresses
                                 WHERE Id = @id
-                                AND NOT EXISTS (SELECT 1 FROM Companies WHERE AddressId = @id)";
+                                AND NOT EXISTS (SELECT 1 FROM Companies WHERE AddressId = @id)
+                                AND NOT EXISTS (SELECT 1 FROM Persons WHERE AddressId = @id)";
         command.Parameters.AddWithValue("@id", addressId);
         return command.ExecuteNonQuery();
     }
