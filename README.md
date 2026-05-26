@@ -23,14 +23,14 @@ git clone https://github.com/TobiasAagaard/TECHCOOL.git
 git clone https://github.com/TobiasAagaard/ERP-CLI ERP-CLI
 ```
 
-**2. Start SQL Server and run the schema**
+**2. Start SQL Server**
 
 ```bash
 docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<Your@Password123>" \
   -p 1433:1433 --name erp-sql -d mcr.microsoft.com/mssql/server:2022-latest
 ```
 
-Then run [`Sql/FullScript.sql`](Sql/FullScript.sql) to create the `ERP_CLI` database and all tables.
+> **Note:** You don't need to create the database or tables manually. On startup, the app uses [DbUp](https://dbup.readthedocs.io/) to create the `ERP_CLI` database (if it doesn't exist) and run every script in [`Migrations/`](Migrations/) in order. Already-applied scripts are tracked in the `SchemaVersions` table and skipped on later runs.
 
 **3. Create `appsettings.Local.json`** in the root of `ERP-CLI/` (git-ignored):
 
