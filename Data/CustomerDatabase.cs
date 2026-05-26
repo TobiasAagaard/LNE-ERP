@@ -169,28 +169,31 @@ namespace ErpCli.Data
 
             try
             {
-                int addressId;
+                int personId;
+                int oldAddressId;
 
-                using SqlCommand cmd = connection.CreateCommand();
-                cmd.Transaction = transaction;
-                cmd.CommandText = @"SELECT p.AddressId
-                                    FROM Customers c
-                                    INNER JOIN Persons p
-                                    ON c.PersonId = p.Id
-                                    WHERE c.Id = @Id;";
-                cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+                using SqlCommand existing = connection.CreateCommand();
+                existing.Transaction = transaction;
+                existing.CommandText = @"SELECT p.Id, p.AddressId
+                                         FROM Customers c
+                                         JOIN Persons p ON c.PersonId = p.Id
+                                         WHERE c.Id = @id";
+                existing.Parameters.Add("@id", SqlDbType.Int).Value = id;
+                using (SqlDataReader reader = existing.ExecuteReader())
+                {
+                    if (!reader.Read())
+                        throw new InvalidOperationException($"Kunden med Id {id} findes ikke.");
+                    personId = reader.GetInt32(0);
+                    oldAddressId = reader.GetInt32(1);
+                }
 
-                object result = cmd.ExecuteScalar();
-                addressId = Convert.ToInt32(result);
+                using SqlCommand command = connection.CreateCommand();
+                command.Transaction = transaction;
+                command.CommandText = @"DELETE FROM Persons WHERE Id = @id";
+                command.Parameters.Add("@id", SqlDbType.Int).Value = personId;
+                command.ExecuteNonQuery();
 
-                using SqlCommand deleteCmd = connection.CreateCommand();
-                deleteCmd.Transaction = transaction;
-                deleteCmd.CommandText = @"DELETE FROM Addresses
-                                          WHERE Id = @AddressId;";
-                deleteCmd.Parameters.Add("@AddressId", SqlDbType.Int).Value = addressId;
-
-                deleteCmd.ExecuteNonQuery();
-
+                DeleteAddressIfNotReferenced(oldAddressId, connection, transaction);
                 transaction.Commit();
             }
             catch
