@@ -22,7 +22,7 @@ public static class Migrator
         var upgrader = DeployChanges.To
             .SqlDatabase(connectionString)
             .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(),
-                name => name.Contains("Migrations"))
+                name => name.Contains(".Migrations") && name.EndsWith(".sql", StringComparison.OrdinalIgnoreCase))
             .WithTransactionPerScript()
             .LogToConsole()
             .Build();

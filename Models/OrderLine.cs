@@ -5,6 +5,6 @@ namespace ErpCli.Models
         public int Id { get; set; }
         public Product? Product { get; set;}
         public string? Name => Product?.Name;
-        public double Quantity { get; set; }
+        public decimal Quantity { get; set; }
     }
 }
