@@ -41,7 +41,7 @@ namespace ErpCli.Data
             return companies;
         }
 
-        public void AddCompany(Company company)
+        public void CreateCompany(Company company)
         {
             using SqlConnection connection = GetConnection();
             using SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.Serializable);
@@ -50,7 +50,7 @@ namespace ErpCli.Data
 
             using SqlCommand command = connection.CreateCommand();
             command.Transaction = transaction;
-            command.CommandText = @"INSERT INTO COMPANIES (Name, Currency, AddressId)
+            command.CommandText = @"INSERT INTO Companies (Name, Currency, AddressId)
                                     VALUES (@name, @currency, @addressId)";
             command.Parameters.AddWithValue("@name", company.Name);
             command.Parameters.AddWithValue("@currency", company.Currency);
@@ -100,6 +100,7 @@ namespace ErpCli.Data
                     transaction.Rollback();
                     throw new InvalidOperationException($"Virksomheden med Id {updatedCompany.Id} findes ikke.");
                 }
+                DeleteAddressIfNotReferenced(oldAddressId, connection, transaction);
             }
             transaction.Commit();
         }
@@ -131,6 +132,7 @@ namespace ErpCli.Data
                 command.Parameters.AddWithValue("@id", id);
                 if (command.ExecuteNonQuery() == 0)
                 {
+                    transaction.Rollback();
                     throw new InvalidOperationException("Virksomheden findes ikke.");
                 }
                 DeleteAddressIfNotReferenced(oldAddressId, connection, transaction);
