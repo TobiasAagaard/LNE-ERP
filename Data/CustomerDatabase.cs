@@ -51,28 +51,24 @@ namespace ErpCli.Data
         /// <summary>
         /// Inserts a new customer.
         /// </summary>
-        public void AddCustomer(Customer customer)
+        public void CreateCustomer(Customer customer)
         {
             using SqlConnection connection = GetConnection();
             using SqlTransaction transaction = connection.BeginTransaction();
 
+            int addressId = GetOrCreateAddressId(customer.Address, connection, transaction);
             try
             {
-                using SqlCommand addressCmd = connection.CreateCommand();
-                addressCmd.Transaction = transaction;
-                addressCmd.CommandText = @"INSERT INTO Addresses (Street, Number, PostalCode, City, Country)
-                                        VALUES (@Street, @Number, @PostalCode, @City, @Country);
-                                        SELECT SCOPE_IDENTITY();";
-                BindAddressParameters(addressCmd, customer);
-                int addressId = Convert.ToInt32(addressCmd.ExecuteScalar());
-
                 using SqlCommand personCmd = connection.CreateCommand();
                 personCmd.Transaction = transaction;
 
                 personCmd.CommandText = @"INSERT INTO Persons (FirstName, LastName, Phone, Email, AddressId)
                                         VALUES (@FirstName, @LastName, @Phone, @Email, @AddressId);
                                         SELECT SCOPE_IDENTITY();";
-                BindPersonParameters(personCmd, customer);
+                personCmd.Parameters.Add("@FirstName", SqlDbType.NVarChar).Value = customer.FirstName;
+                personCmd.Parameters.Add("@LastName", SqlDbType.NVarChar).Value = customer.LastName;
+                personCmd.Parameters.Add("@Phone", SqlDbType.NVarChar).Value = customer.Phone;
+                personCmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = customer.Email;
                 personCmd.Parameters.Add("@AddressId", SqlDbType.Int).Value = addressId;
                 int personId = Convert.ToInt32(personCmd.ExecuteScalar());
 
@@ -82,9 +78,7 @@ namespace ErpCli.Data
                 customerCmd.CommandText = @"INSERT INTO Customers (PersonId, LastPurchaseAt)
                                             VALUES (@PersonId, @LastPurchaseAt);";
                 customerCmd.Parameters.Add("@PersonId", SqlDbType.Int).Value = personId;
-                customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value =
-                    (object?)customer.LastPurchaseAt ?? DBNull.Value;
-
+                customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value = (object?)customer.LastPurchaseAt ?? DBNull.Value;
                 customerCmd.ExecuteNonQuery();
 
                 transaction.Commit();
@@ -128,7 +122,10 @@ namespace ErpCli.Data
                                               Phone = @Phone,
                                               Email = @Email
                                           WHERE Id = @id;";
-                BindPersonParameters(personCmd, updatedCustomer);
+                personCmd.Parameters.AddWithValue("@FirstName", updatedCustomer.FirstName);
+                personCmd.Parameters.AddWithValue("@LastName", updatedCustomer.LastName);
+                personCmd.Parameters.AddWithValue("@Phone", updatedCustomer.Phone);
+                personCmd.Parameters.AddWithValue("@Email", updatedCustomer.Email);
                 personCmd.Parameters.Add("@id", SqlDbType.Int).Value = updatedCustomer.Id;
 
                 personCmd.ExecuteNonQuery();
@@ -144,7 +141,11 @@ namespace ErpCli.Data
                                            FROM Addresses a
                                            INNER JOIN Persons p ON p.AddressId = a.Id
                                            WHERE p.Id = @id;";
-                BindAddressParameters(addressCmd, updatedCustomer);
+                addressCmd.Parameters.AddWithValue("@Street", updatedCustomer.Street);
+                addressCmd.Parameters.AddWithValue("@Number", updatedCustomer.Number);
+                addressCmd.Parameters.AddWithValue("@City", updatedCustomer.City);
+                addressCmd.Parameters.AddWithValue("@Country", updatedCustomer.Country);
+                addressCmd.Parameters.AddWithValue("@PostalCode", updatedCustomer.PostalCode);
                 addressCmd.Parameters.Add("@id", SqlDbType.Int).Value = updatedCustomer.Id;
 
                 addressCmd.ExecuteNonQuery();
@@ -223,21 +224,6 @@ namespace ErpCli.Data
                 City            = reader.GetString(10),
                 Country         = reader.GetString(11)
             };
-        }
-        private static void BindAddressParameters(SqlCommand cmd, Customer c)
-        {
-            cmd.Parameters.AddWithValue("@Street", c.Street);
-            cmd.Parameters.AddWithValue("@Number", c.Number);
-            cmd.Parameters.AddWithValue("@PostalCode", c.PostalCode);
-            cmd.Parameters.AddWithValue("@City", c.City);
-            cmd.Parameters.AddWithValue("@Country", c.Country);
-        }
-        private static void BindPersonParameters(SqlCommand cmd, Customer c)
-        {
-            cmd.Parameters.AddWithValue("@FirstName", c.FirstName);
-            cmd.Parameters.AddWithValue("@LastName", c.LastName);
-            cmd.Parameters.AddWithValue("@Phone", c.Phone);
-            cmd.Parameters.AddWithValue("@Email", c.Email);
         }
     }
 

@@ -53,7 +53,7 @@ namespace ErpCli.Views
                 }
                 else
                 {
-                    Database.Instance.AddCompany(company);
+                    Database.Instance.CreateCompany(company);
                 }
                 Console.WriteLine("Ændringerne blev gemt");
             }
