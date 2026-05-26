@@ -9,8 +9,8 @@ namespace ErpCli.Models
         public OrderStatus Status { get; set; }
         public List<int> OrderLineIdList = new List<int>();
         public List<OrderLine> OrderLineList = new List<OrderLine>();
-        public double? OrderTotal =>
-            OrderLineList.Sum(orderLine => orderLine.Product?.Price * orderLine.Quantity ?? 0);
+        public decimal? OrderTotal =>
+            OrderLineList.Sum(orderLine => orderLine.Quantity * (orderLine.Product?.Price ?? 0));
         public Customer? customer { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }

@@ -10,7 +10,7 @@ public class OrderTotalTest
     [InlineData(50, 5, 250)]    // 5 items at 50 each -> total 250
     [InlineData(20, 0, 0)]      // 0 items at 20 each -> total 0
     
-    public void OrderTotal_ReturnsExpectedTotal(double price, int quantity, double expected)
+    public void OrderTotal_ReturnsExpectedTotal(decimal price, decimal quantity, decimal expected)
     {
        
         SalesOrderHeader header = new()

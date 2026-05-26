@@ -143,17 +143,17 @@ namespace ErpCli.Data
             return new OrderLine
             {
                 Id          = reader.GetInt32(0),
-                Quantity    = reader.GetDouble(2),
+                Quantity    = reader.GetDecimal(2),
                 Product     = new Product
                 {
                     Id              = reader.GetInt32(3),
                     ItemNumber      = reader.IsDBNull(4) ? null : reader.GetString(4),
                     Name            = reader.IsDBNull(5) ? null : reader.GetString(5),
                     Description     = reader.IsDBNull(6) ? null : reader.GetString(6),
-                    Price           = reader.IsDBNull(7) ? null : reader.GetDouble(7),
-                    Cost            = reader.IsDBNull(8) ? null : reader.GetDouble(8),
+                    Price           = reader.IsDBNull(7) ? null : reader.GetDecimal(7),
+                    Cost            = reader.IsDBNull(8) ? null : reader.GetDecimal(8),
                     Location        = reader.IsDBNull(9) ? null : reader.GetString(9),
-                    StockQuantity   = reader.GetDouble(10),
+                    StockQuantity   = reader.GetDecimal(10),
                     Unit            = (Unit)reader.GetInt32(11)
                 }
             };

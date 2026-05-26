@@ -100,10 +100,10 @@ namespace ErpCli.Data
                 ItemNumber      = reader.IsDBNull(1) ? null : reader.GetString(1),
                 Name            = reader.IsDBNull(2) ? null : reader.GetString(2),
                 Description     = reader.IsDBNull(3) ? null : reader.GetString(3),
-                Price           = reader.IsDBNull(4) ? null : reader.GetDouble(4),
-                Cost            = reader.IsDBNull(5) ? null : reader.GetDouble(5),
+                Price           = reader.IsDBNull(4) ? null : reader.GetDecimal(4),
+                Cost            = reader.IsDBNull(5) ? null : reader.GetDecimal(5),
                 Location        = reader.IsDBNull(6) ? null : reader.GetString(6),
-                StockQuantity   = reader.GetDouble(7),
+                StockQuantity   = reader.GetDecimal(7),
                 Unit            = (Unit)reader.GetInt32(8)
             };
 
