@@ -23,15 +23,14 @@ namespace ErpCli.Data
         {
             IConfigurationSection db = _config.GetSection("Database");
 
-            SqlConnectionStringBuilder builder = new()
-            {
-                DataSource = db["DataSource"]!,
-                UserID = db["UserId"]!,
-                Password = db["Password"]!,
-                InitialCatalog = db["InitialCatalog"]!,
-                TrustServerCertificate = true
-            };
-            SqlConnection connection = new SqlConnection(builder.ToString());
+            string connectionString =
+                $"Server={db["DataSource"]};" +
+                $"Database={db["InitialCatalog"]};" +
+                $"User Id={db["UserId"]};" +
+                $"Password={db["Password"]};" +
+                $"TrustServerCertificate=True;";
+
+            SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();
             return connection;
         }
