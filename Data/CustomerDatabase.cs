@@ -99,8 +99,24 @@ namespace ErpCli.Data
             using SqlConnection connection = GetConnection();
             using SqlTransaction transaction = connection.BeginTransaction();
 
+           
             try
             {
+                int oldAddressId;
+                using SqlCommand existing = connection.CreateCommand();
+                existing.Transaction = transaction;
+                existing.CommandText = @"SELECT AddressId FROM Persons WHERE Id = @id";
+                existing.Parameters.Add("@id", SqlDbType.Int).Value = updatedCustomer.Id;
+                object? result = existing.ExecuteScalar();
+                if (result is null)
+                {
+                    transaction.Rollback();
+                    throw new InvalidOperationException($"Kunden med Id {updatedCustomer.Id} findes ikke.");
+                }
+                oldAddressId = Convert.ToInt32(result);
+
+                int addressId = GetOrCreateAddressId(updatedCustomer.Address, connection, transaction);
+
                 using SqlCommand customerCmd = connection.CreateCommand();
                 customerCmd.Transaction = transaction;
                 customerCmd.CommandText = @"UPDATE c
@@ -120,35 +136,19 @@ namespace ErpCli.Data
                                           SET FirstName = @FirstName,
                                               LastName = @LastName,
                                               Phone = @Phone,
-                                              Email = @Email
+                                              Email = @Email,
+                                              AddressId = @AddressId
                                           WHERE Id = @id;";
-                personCmd.Parameters.AddWithValue("@FirstName", updatedCustomer.FirstName);
-                personCmd.Parameters.AddWithValue("@LastName", updatedCustomer.LastName);
-                personCmd.Parameters.AddWithValue("@Phone", updatedCustomer.Phone);
-                personCmd.Parameters.AddWithValue("@Email", updatedCustomer.Email);
+                personCmd.Parameters.Add("@FirstName", SqlDbType.NVarChar).Value = updatedCustomer.FirstName;
+                personCmd.Parameters.Add("@LastName", SqlDbType.NVarChar).Value = updatedCustomer.LastName;
+                personCmd.Parameters.Add("@Phone", SqlDbType.NVarChar).Value = updatedCustomer.Phone;
+                personCmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = updatedCustomer.Email;
+                personCmd.Parameters.Add("@AddressId", SqlDbType.Int).Value = addressId;
                 personCmd.Parameters.Add("@id", SqlDbType.Int).Value = updatedCustomer.Id;
 
                 personCmd.ExecuteNonQuery();
 
-                using SqlCommand addressCmd = connection.CreateCommand();
-                addressCmd.Transaction = transaction;
-                addressCmd.CommandText = @"UPDATE a
-                                           SET a.Street = @Street,
-                                               a.Number = @Number,
-                                               a.City = @City,
-                                               a.Country = @Country,
-                                               a.PostalCode = @PostalCode
-                                           FROM Addresses a
-                                           INNER JOIN Persons p ON p.AddressId = a.Id
-                                           WHERE p.Id = @id;";
-                addressCmd.Parameters.AddWithValue("@Street", updatedCustomer.Street);
-                addressCmd.Parameters.AddWithValue("@Number", updatedCustomer.Number);
-                addressCmd.Parameters.AddWithValue("@City", updatedCustomer.City);
-                addressCmd.Parameters.AddWithValue("@Country", updatedCustomer.Country);
-                addressCmd.Parameters.AddWithValue("@PostalCode", updatedCustomer.PostalCode);
-                addressCmd.Parameters.Add("@id", SqlDbType.Int).Value = updatedCustomer.Id;
-
-                addressCmd.ExecuteNonQuery();
+                DeleteAddressIfNotReferenced(oldAddressId, connection, transaction);
 
                 transaction.Commit();
             }
