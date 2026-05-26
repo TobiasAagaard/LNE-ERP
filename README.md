@@ -56,13 +56,15 @@ dotnet run
 
 Three layers — **Views**, **Models**, **Data** — wired through a `Database.Instance` singleton. Navigation uses TECHCOOL's `Screen` and `Menu` primitives.
 
-```
-MainMenu
-  ├── CompanyListScreen   → CompanyDetailsScreen   → CompanyEditScreen
-  ├── ProductListPage     → ProductDetailsScreen   → ProductEditorScreen
-  ├── SalesListScreen     → SalesDetailsScreen     → SalesEditScreen
-  │                                └── OrderLineEditScreen
-  └── CustomerListScreen  → CustomerDetailsScreen  → CustomerEditScreen
+```mermaid
+flowchart LR
+    Main([MainMenu])
+
+    Main --> CL[CompanyListScreen]   --> CD[CompanyDetailsScreen]   --> CE[CompanyEditScreen]
+    Main --> PL[ProductListPage]     --> PD[ProductDetailsScreen]   --> PE[ProductEditorScreen]
+    Main --> SL[SalesListScreen]     --> SD[SalesDetailsScreen]     --> SE[SalesEditScreen]
+    SD --> OLE[OrderLineEditScreen]
+    Main --> CuL[CustomerListScreen] --> CuD[CustomerDetailsScreen] --> CuE[CustomerEditScreen]
 ```
 
 Each list screen loads records, registers function keys (F1/F3 create, F2 edit, F5 delete), and opens a details screen on `Enter`.
