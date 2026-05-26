@@ -1,6 +1,8 @@
 ﻿using ErpCli.Models;
+using ErpCli.Helpers;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ErpCli.Data
 {
@@ -51,7 +53,7 @@ namespace ErpCli.Data
         /// <summary>
         /// Inserts a new customer.
         /// </summary>
-        public void CreateCustomer(Customer customer)
+        public bool CreateCustomer(Customer customer)
         {
             using SqlConnection connection = GetConnection();
             using SqlTransaction transaction = connection.BeginTransaction();
@@ -83,11 +85,15 @@ namespace ErpCli.Data
                 customerCmd.ExecuteNonQuery();
 
                 transaction.Commit();
+                return true;
             }
-            catch
+            catch (Exception ex)
             {
                 transaction.Rollback();
-                throw;
+                ExceptionHelper.ExceptionText(ex, "Fejl ved oprettelse af kunde");
+                Console.ReadKey(true);
+                return false;
+                
             }
         }
 
@@ -95,7 +101,7 @@ namespace ErpCli.Data
         /// Updates the customer, person and address rows matching each of their corresponding IDs (Id, Id and Address.Id) with the values from the given customer.
         /// No-op if no row matches.
         /// </summary>
-        public void UpdateCustomer(Customer updatedCustomer)
+        public bool UpdateCustomer(Customer updatedCustomer)
         {
             using SqlConnection connection = GetConnection();
             using SqlTransaction transaction = connection.BeginTransaction();
@@ -157,18 +163,21 @@ namespace ErpCli.Data
                 DeleteAddressIfNotReferenced(oldAddressId, connection, transaction);
 
                 transaction.Commit();
+                return true;
             }
-            catch
+            catch (Exception ex)
             {
                 transaction.Rollback();
-                throw;
+                ExceptionHelper.ExceptionText(ex, "Fejl ved opdatering af kunde");
+                Console.ReadKey(true);
+                return false;
             }
         }
 
         /// <summary>
         /// Deletes the Person with the given Id. No-op if no row matches.
         /// </summary>
-        public void DeleteCustomerById(int id)
+        public bool DeleteCustomerById(int id)
         {
             using SqlConnection connection = GetConnection();
             using SqlTransaction transaction = connection.BeginTransaction();
@@ -201,11 +210,14 @@ namespace ErpCli.Data
 
                 DeleteAddressIfNotReferenced(oldAddressId, connection, transaction);
                 transaction.Commit();
+                return true;
             }
-            catch
+            catch (Exception ex)
             {
                 transaction.Rollback();
-                throw;
+                ExceptionHelper.ExceptionText(ex, "Fejl ved sletning af kunde");
+                Console.ReadKey(true);
+                return false;
             }
         }
 

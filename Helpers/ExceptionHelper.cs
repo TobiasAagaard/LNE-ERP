@@ -5,6 +5,7 @@ namespace ErpCli.Helpers
         public static void ExceptionText(Exception ex, string contextMessage)
         {
             Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine();
             Console.WriteLine($"{contextMessage}");
             Console.WriteLine();
             Console.WriteLine($"Fejlbesked: {ex.Message}");
