@@ -12,16 +12,18 @@ A command-line ERP system built in C# / .NET 10 for **LNE Security A/S**, a fict
 
 **1. Clone both repos side by side**
 
+```bash
+git clone https://github.com/TobiasAagaard/TECHCOOL.git
+git clone https://github.com/TobiasAagaard/ERP-CLI ERP-CLI
+```
+
 ```
 Projects/
   TECHCOOL/
   ERP-CLI/
 ```
 
-```bash
-git clone https://github.com/TobiasAagaard/TECHCOOL.git
-git clone https://github.com/TobiasAagaard/ERP-CLI ERP-CLI
-```
+
 
 **2. Start SQL Server**
 
@@ -30,11 +32,6 @@ docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<Your@Password123>" \
   -p 1433:1433 --name erp-sql -d mcr.microsoft.com/mssql/server:2022-latest
 ```
 
-<<<<<<< HEAD
-> **Note:** You don't need to create the database or tables manually. On startup, the app connection string to know where to create the `ERP_CLI` database (if it doesn't exist) and run every script in [`Migrations/`](Migrations/) in order.
-
-=======
->>>>>>> f0fbc37 (fixed problems from last and refactored to use decimal instead of doubble)
 **3. Create `appsettings.Local.json`** in the root of `ERP-CLI/` (git-ignored):
 
 ```json
@@ -54,8 +51,7 @@ docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<Your@Password123>" \
 dotnet build
 dotnet run
 ```
-
-**Note:** When you run the app for the first time, it will automatically create the `ERP_CLI` database and apply migrations to set up the schema.
+> **Note:** On startup, the app automatically creates the `ERP_CLI` database (if it doesn’t exist) and runs all migrations from [`Migrations/`](Migrations/) to set up the schema.
 
 ## Architecture
 
