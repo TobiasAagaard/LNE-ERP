@@ -2,9 +2,17 @@ ALTER TABLE Customers
 ADD CompanyId INT NULL;
 GO
 
--- update existing records to have a default company id of 1
+DECLARE @BackfillCompanyId INT = (
+    SELECT TOP (1) Id
+    FROM Companies
+    ORDER BY Id
+)
+
+IF @BackfillCompanyId IS NULL
+    THROW 50001, 'No companies found to the backfill CompanyId in Customers.', 1;
+
 UPDATE Customers
-SET CompanyId = 1
+SET CompanyId = @BackfillCompanyId
 WHERE CompanyId IS NULL;
 GO
 
