@@ -5,6 +5,7 @@ namespace ErpCli.Models
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public Currency Currency { get; set; }
+        public ICollection<Customer> Customers { get; set; } = new List<Customer>();
         public Address Address { get; set; } = new();
         public string Street
         {
