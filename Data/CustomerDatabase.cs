@@ -15,7 +15,7 @@ namespace ErpCli.Data
         {
             using SqlConnection connection = GetConnection();
             using SqlCommand cmd = connection.CreateCommand();
-            cmd.CommandText = @"SELECT  Persons.Id, Customers.Id, LastPurchaseAt, FirstName, LastName, Phone, Email, Street, Number, PostalCode, City, Country, CompanyId
+            cmd.CommandText = @"SELECT  Persons.Id, Customers.Id, LastPurchaseAt, FirstName, LastName, Phone, Email, Street, Number, PostalCode, City, Country, CompanyId, Companies.Name
                                 FROM Customers
                                 JOIN Persons
                                 ON Customers.PersonId = Persons.Id
@@ -40,7 +40,7 @@ namespace ErpCli.Data
             List<Customer> customers = new();
             using SqlConnection connection = GetConnection();
             using SqlCommand cmd = connection.CreateCommand();
-            cmd.CommandText = @"SELECT  Persons.Id, Customers.Id, LastPurchaseAt, FirstName, LastName, Phone, Email, Street, Number, PostalCode, City, Country, CompanyId
+            cmd.CommandText = @"SELECT  Persons.Id, Customers.Id, LastPurchaseAt, FirstName, LastName, Phone, Email, Street, Number, PostalCode, City, Country, CompanyId, Companies.Name
                                 FROM Customers
                                 JOIN Persons
                                 ON Customers.PersonId = Persons.Id
@@ -251,7 +251,13 @@ namespace ErpCli.Data
                 PostalCode      = reader.GetString(9),
                 City            = reader.GetString(10),
                 Country         = reader.GetString(11),
-                CompanyId       = reader.GetInt32(12)
+                
+                CompanyId       = reader.GetInt32(12),
+                Company         = new Company
+                {
+                    Id = reader.GetInt32(12),
+                    Name = reader.GetString(13)
+                }
             };
         }
     }
