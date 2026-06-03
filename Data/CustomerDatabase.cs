@@ -250,7 +250,8 @@ namespace ErpCli.Data
                 Number          = reader.GetString(8),
                 PostalCode      = reader.GetString(9),
                 City            = reader.GetString(10),
-                Country         = reader.GetString(11)
+                Country         = reader.GetString(11),
+                CompanyId       = reader.GetInt32(12)
             };
         }
     }
