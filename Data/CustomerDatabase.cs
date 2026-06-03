@@ -15,13 +15,15 @@ namespace ErpCli.Data
         {
             using SqlConnection connection = GetConnection();
             using SqlCommand cmd = connection.CreateCommand();
-            cmd.CommandText = @"SELECT  p.Id, c.Id, LastPurchaseAt, FirstName, LastName, Phone, Email, Street, Number, PostalCode, City, Country
-                                FROM Customers c
-                                JOIN Persons p
-                                ON c.PersonId = p.Id
+            cmd.CommandText = @"SELECT  Persons.Id, Customers.Id, LastPurchaseAt, FirstName, LastName, Phone, Email, Street, Number, PostalCode, City, Country, CompanyId
+                                FROM Customers
+                                JOIN Persons
+                                ON Customers.PersonId = Persons.Id
                                 JOIN Addresses
-                                ON AddressId = Addresses.Id
-                                WHERE c.Id = @id;";
+                                ON Persons.AddressId = Addresses.Id
+                                JOIN Companies
+                                ON Customers.CompanyId = Companies.Id
+                                WHERE Customers.Id = @id;";
             cmd.Parameters.AddWithValue("@id", id);
 
             using SqlDataReader reader = cmd.ExecuteReader();
@@ -38,12 +40,14 @@ namespace ErpCli.Data
             List<Customer> customers = new();
             using SqlConnection connection = GetConnection();
             using SqlCommand cmd = connection.CreateCommand();
-            cmd.CommandText = @"SELECT p.Id, c.Id, LastPurchaseAt, FirstName, LastName, Phone, Email, Street, Number, PostalCode, City, Country
-                                FROM Customers c
-                                JOIN Persons p
-                                ON c.PersonId = p.Id
+            cmd.CommandText = @"SELECT  Persons.Id, Customers.Id, LastPurchaseAt, FirstName, LastName, Phone, Email, Street, Number, PostalCode, City, Country, CompanyId
+                                FROM Customers
+                                JOIN Persons
+                                ON Customers.PersonId = Persons.Id
                                 JOIN Addresses
-                                ON AddressId = Addresses.Id;";
+                                ON Persons.AddressId = Addresses.Id
+                                JOIN Companies
+                                ON Customers.CompanyId = Companies.Id;";
             using SqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
                 customers.Add(ReadCustomer(reader));
@@ -78,10 +82,11 @@ namespace ErpCli.Data
                 using SqlCommand customerCmd = connection.CreateCommand();
                 customerCmd.Transaction = transaction;
 
-                customerCmd.CommandText = @"INSERT INTO Customers (PersonId, LastPurchaseAt)
-                                            VALUES (@PersonId, @LastPurchaseAt);";
+                customerCmd.CommandText = @"INSERT INTO Customers (PersonId, LastPurchaseAt, CompanyId)
+                                            VALUES (@PersonId, @LastPurchaseAt, @CompanyId);";
                 customerCmd.Parameters.Add("@PersonId", SqlDbType.Int).Value = personId;
                 customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value = (object?)customer.LastPurchaseAt ?? DBNull.Value;
+                customerCmd.Parameters.Add("@CompanyId", SqlDbType.Int).Value = (object)customer.CompanyId;
                 customerCmd.ExecuteNonQuery();
 
                 transaction.Commit();
@@ -128,13 +133,15 @@ namespace ErpCli.Data
 
                 using SqlCommand customerCmd = connection.CreateCommand();
                 customerCmd.Transaction = transaction;
-                customerCmd.CommandText = @"UPDATE c
-                                            SET c.LastPurchaseAt = @LastPurchaseAt
+                customerCmd.CommandText = @"UPDATE Customers
+                                            SET LastPurchaseAt = @LastPurchaseAt,
+                                                CompanyId = @CompanyId
                                             FROM Customers c
                                             INNER JOIN Persons p ON p.Id = c.PersonId
                                             WHERE p.Id = @id;";
                 customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value =
                     (object?)updatedCustomer.LastPurchaseAt ?? DBNull.Value;
+                customerCmd.Parameters.Add("@CompanyId", SqlDbType.Int).Value = (object)updatedCustomer.CompanyId;
                 customerCmd.Parameters.Add("@id", SqlDbType.Int).Value = updatedCustomer.Id;
 
                 if (customerCmd.ExecuteNonQuery() == 0)
@@ -224,7 +231,7 @@ namespace ErpCli.Data
         /// <summary>
         /// Maps the current row of the given reader to a Customer. Column order must match
         /// the SELECT statements in this file: Id, LastPurchasedAt, FirstName, LastName, Phone,
-        /// Email, Street, Number, PostalCode, City.
+        /// Email, Street, Number, PostalCode, City, CompanyId.
         /// </summary>
         private static Customer ReadCustomer(SqlDataReader reader)
         {
@@ -243,7 +250,8 @@ namespace ErpCli.Data
                 Number          = reader.GetString(8),
                 PostalCode      = reader.GetString(9),
                 City            = reader.GetString(10),
-                Country         = reader.GetString(11)
+                Country         = reader.GetString(11),
+                CompanyId       = reader.GetInt32(12)
             };
         }
     }

@@ -1,0 +1,3 @@
+ALTER TABLE Addresses
+ADD Floor NVARCHAR(50) NULL;
+GO

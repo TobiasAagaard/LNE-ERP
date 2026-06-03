@@ -34,6 +34,14 @@ namespace ErpCli.Views
             
             form.TextBox("Telefon", nameof(customer.Phone));
             form.TextBox("Email", nameof(customer.Email));
+            
+            form.SearchBox("Firma", nameof(customer.CompanyId), term =>
+                Database.Instance.GetAllCompanies()
+                    .Where(c =>
+                        (c.Name ?? "").Contains(term, StringComparison.OrdinalIgnoreCase))
+                    .Select(c => ($"{c.Name} {c.Id}", (object)c.Id))
+                    .ToList());
+
             if (form.Edit(customer))
             {
                 if (string.IsNullOrEmpty(customer.FirstName)
@@ -44,7 +52,8 @@ namespace ErpCli.Views
                     || string.IsNullOrEmpty(customer.City)
                     || string.IsNullOrEmpty(customer.Country)
                     || string.IsNullOrEmpty(customer.Phone)
-                    || string.IsNullOrEmpty(customer.Email))
+                    || string.IsNullOrEmpty(customer.Email)
+                    || customer.CompanyId == 0)
                 {
                     Console.WriteLine("Felterne må ikke være tomme!");
                     return;
