@@ -31,7 +31,8 @@ public class CustomerListScreen : Screen
         listPage.AddColumn("Kundenummer", nameof(Customer.CustomerId), 12);
         listPage.AddColumn("Navn", nameof(Customer.FullName), 30);
         listPage.AddColumn("Telefon", nameof(Customer.Phone), 15);
-        listPage.AddColumn("Email", nameof(Customer.Email), 30);
+        listPage.AddColumn("Email", nameof(Customer.Email), 20);
+        listPage.AddColumn("Firma", nameof(Customer.CompanyName), 20);
 
         List<Customer> customers;
         try

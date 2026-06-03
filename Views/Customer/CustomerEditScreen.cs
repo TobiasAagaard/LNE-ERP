@@ -39,7 +39,7 @@ namespace ErpCli.Views
                 Database.Instance.GetAllCompanies()
                     .Where(c =>
                         (c.Name ?? "").Contains(term, StringComparison.OrdinalIgnoreCase))
-                    .Select(c => ($"{c.Name} {c.Id}", (object)c.Id))
+                    .Select(c => ($"{c.Name}", (object)c.Id))
                     .ToList());
 
             if (form.Edit(customer))
