@@ -1,8 +1,0 @@
-CREATE TABLE Companies (
-	Id				INT				IDENTITY(1,1) PRIMARY KEY,
-	AddressId		INT				NOT NULL,
-	Name			NVARCHAR(200)	NOT NULL,
-	Currency		NVARCHAR(10)	NOT NULL,
-
-	FOREIGN KEY (AddressId) REFERENCES Addresses(Id)
-);
