@@ -22,7 +22,7 @@ BEGIN
 END
 GO
 
-ALTER TABLE SalesORderHeaders DROP COLUMN CustomerId;
+ALTER TABLE SalesOrderHeaders DROP COLUMN CustomerId;
 GO
 
 IF  EXISTS (SELECT 1 FROM SalesOrderHeaders WHERE CompanyId IS NULL)
