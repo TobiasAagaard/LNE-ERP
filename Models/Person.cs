@@ -5,6 +5,8 @@ namespace ErpCli.Models
     public class Person
     {
         public int Id { get; set; }
+        public int CompanyId { get; set; }
+        public int AddressId { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string FullName => $"{FirstName} {LastName}";
@@ -38,5 +40,19 @@ namespace ErpCli.Models
             get => Address.Country;
             set => Address.Country = value ?? string.Empty;
         }
+        public Company? Company { get; set; }
+        public string CompanyName
+        {
+            get => Company?.Name ?? string.Empty;
+            set
+            {
+                if (Company == null)
+                {
+                    Company = new Company();
+                }
+                Company.Name = value ?? string.Empty;
+            }
+        }
+
     }
 }

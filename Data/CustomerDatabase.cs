@@ -11,7 +11,7 @@ namespace ErpCli.Data
         /// <summary>
         /// Returns the customer (incl. person and address) with the given Id, or null if no such customer exists.
         /// </summary>
-        public Customer? GetCustomerById(int id)
+        public Person? GetCustomerById(int id)
         {
             using SqlConnection connection = GetConnection();
             using SqlCommand cmd = connection.CreateCommand();
@@ -35,9 +35,9 @@ namespace ErpCli.Data
         /// <summary>
         /// Returns all customers (incl. person and address) from the Customers table. Empty list if the table is empty.
         /// </summary>
-        public List<Customer> GetAllCustomers()
+        public List<Person> GetAllCustomers()
         {
-            List<Customer> customers = new();
+            List<Person> customers = new();
             using SqlConnection connection = GetConnection();
             using SqlCommand cmd = connection.CreateCommand();
             cmd.CommandText = @"SELECT  Persons.Id, Customers.Id, LastPurchaseAt, FirstName, LastName, Phone, Email, Street, Number, PostalCode, City, Country, CompanyId, Companies.Name
@@ -57,7 +57,7 @@ namespace ErpCli.Data
         /// <summary>
         /// Inserts a new customer.
         /// </summary>
-        public bool CreateCustomer(Customer customer)
+        public bool CreateCustomer(Person customer)
         {
             using SqlConnection connection = GetConnection();
             using SqlTransaction transaction = connection.BeginTransaction();
@@ -85,7 +85,7 @@ namespace ErpCli.Data
                 customerCmd.CommandText = @"INSERT INTO Customers (PersonId, LastPurchaseAt, CompanyId)
                                             VALUES (@PersonId, @LastPurchaseAt, @CompanyId);";
                 customerCmd.Parameters.Add("@PersonId", SqlDbType.Int).Value = personId;
-                customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value = (object?)customer.LastPurchaseAt ?? DBNull.Value;
+                //customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value = (object?)customer.LastPurchaseAt ?? DBNull.Value;
                 customerCmd.Parameters.Add("@CompanyId", SqlDbType.Int).Value = (object)customer.CompanyId;
                 customerCmd.ExecuteNonQuery();
 
@@ -106,7 +106,7 @@ namespace ErpCli.Data
         /// Updates the customer, person and address rows matching each of their corresponding IDs (Id, Id and Address.Id) with the values from the given customer.
         /// No-op if no row matches.
         /// </summary>
-        public bool UpdateCustomer(Customer updatedCustomer)
+        public bool UpdateCustomer(Person updatedCustomer)
         {
             using SqlConnection connection = GetConnection();
             using SqlTransaction transaction = connection.BeginTransaction();
@@ -139,8 +139,8 @@ namespace ErpCli.Data
                                             FROM Customers c
                                             INNER JOIN Persons p ON p.Id = c.PersonId
                                             WHERE p.Id = @id;";
-                customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value =
-                    (object?)updatedCustomer.LastPurchaseAt ?? DBNull.Value;
+                // customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value =
+                    //(object?)updatedCustomer.LastPurchaseAt ?? DBNull.Value;
                 customerCmd.Parameters.Add("@CompanyId", SqlDbType.Int).Value = (object)updatedCustomer.CompanyId;
                 customerCmd.Parameters.Add("@id", SqlDbType.Int).Value = updatedCustomer.Id;
 
@@ -233,13 +233,12 @@ namespace ErpCli.Data
         /// the SELECT statements in this file: Id, LastPurchasedAt, FirstName, LastName, Phone,
         /// Email, Street, Number, PostalCode, City, CompanyId.
         /// </summary>
-        private static Customer ReadCustomer(SqlDataReader reader)
+        private static Person ReadCustomer(SqlDataReader reader)
         {
-            return new Customer
+            return new Person
             {
                 Id              = reader.GetInt32(0),
-                CustomerId      = reader.GetInt32(1),
-                LastPurchaseAt  = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
+                //LastPurchaseAt  = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
 
                 FirstName       = reader.GetString(3),
                 LastName        = reader.GetString(4),

@@ -13,7 +13,6 @@ namespace ErpCli.Views
             menu.Add(new CompanyListScreen());
             menu.Add(new ProductListPage());
             menu.Add(new SalesListScreen());
-            menu.Add(new CustomerListScreen());
 
             Display(menu);
         }
