@@ -15,15 +15,13 @@ namespace ErpCli.Data
         {
             using SqlConnection connection = GetConnection();
             using SqlCommand cmd = connection.CreateCommand();
-            cmd.CommandText = @"SELECT  Persons.Id, Customers.Id, LastPurchaseAt, FirstName, LastName, Phone, Email, Street, Number, PostalCode, City, Country, CompanyId, Companies.Name
-                                FROM Customers
-                                JOIN Persons
-                                ON Customers.PersonId = Persons.Id
+            cmd.CommandText = @"SELECT  Persons.Id, FirstName, LastName, Phone, Email, Street, Number, PostalCode, City, Country, Persons.CompanyId, Companies.Name
+                                FROM Persons
                                 JOIN Addresses
                                 ON Persons.AddressId = Addresses.Id
                                 JOIN Companies
-                                ON Customers.CompanyId = Companies.Id
-                                WHERE Customers.Id = @id;";
+                                ON Persons.CompanyId = Companies.Id
+                                WHERE Persons.Id = @id;";
             cmd.Parameters.AddWithValue("@id", id);
 
             using SqlDataReader reader = cmd.ExecuteReader();
@@ -40,14 +38,12 @@ namespace ErpCli.Data
             List<Person> customers = new();
             using SqlConnection connection = GetConnection();
             using SqlCommand cmd = connection.CreateCommand();
-            cmd.CommandText = @"SELECT  Persons.Id, Customers.Id, LastPurchaseAt, FirstName, LastName, Phone, Email, Street, Number, PostalCode, City, Country, CompanyId, Companies.Name
-                                FROM Customers
-                                JOIN Persons
-                                ON Customers.PersonId = Persons.Id
+            cmd.CommandText = @"SELECT  Persons.Id, FirstName, LastName, Phone, Email, Street, Number, PostalCode, City, Country, Persons.CompanyId, Companies.Name
+                                FROM Persons
                                 JOIN Addresses
                                 ON Persons.AddressId = Addresses.Id
                                 JOIN Companies
-                                ON Customers.CompanyId = Companies.Id;";
+                                ON Persons.CompanyId = Companies.Id;";
             using SqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
                 customers.Add(ReadCustomer(reader));
@@ -68,26 +64,17 @@ namespace ErpCli.Data
                 using SqlCommand personCmd = connection.CreateCommand();
                 personCmd.Transaction = transaction;
 
-                personCmd.CommandText = @"INSERT INTO Persons (FirstName, LastName, Phone, Email, AddressId)
-                                        VALUES (@FirstName, @LastName, @Phone, @Email, @AddressId);
+                personCmd.CommandText = @"INSERT INTO Persons (FirstName, LastName, Phone, Email, AddressId, CompanyId)
+                                        VALUES (@FirstName, @LastName, @Phone, @Email, @AddressId, @CompanyId);
                                         SELECT SCOPE_IDENTITY();";
-                                        
+
                 personCmd.Parameters.Add("@FirstName", SqlDbType.NVarChar).Value = customer.FirstName;
                 personCmd.Parameters.Add("@LastName", SqlDbType.NVarChar).Value = customer.LastName;
                 personCmd.Parameters.Add("@Phone", SqlDbType.NVarChar).Value = customer.Phone;
                 personCmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = customer.Email;
                 personCmd.Parameters.Add("@AddressId", SqlDbType.Int).Value = addressId;
-                int personId = Convert.ToInt32(personCmd.ExecuteScalar());
-
-                using SqlCommand customerCmd = connection.CreateCommand();
-                customerCmd.Transaction = transaction;
-
-                customerCmd.CommandText = @"INSERT INTO Customers (PersonId, LastPurchaseAt, CompanyId)
-                                            VALUES (@PersonId, @LastPurchaseAt, @CompanyId);";
-                customerCmd.Parameters.Add("@PersonId", SqlDbType.Int).Value = personId;
-                //customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value = (object?)customer.LastPurchaseAt ?? DBNull.Value;
-                customerCmd.Parameters.Add("@CompanyId", SqlDbType.Int).Value = (object)customer.CompanyId;
-                customerCmd.ExecuteNonQuery();
+                personCmd.Parameters.Add("@CompanyId", SqlDbType.Int).Value = customer.CompanyId;
+                personCmd.ExecuteScalar();
 
                 transaction.Commit();
                 return true;
@@ -117,10 +104,9 @@ namespace ErpCli.Data
                 int oldAddressId;
                 using SqlCommand existing = connection.CreateCommand();
                 existing.Transaction = transaction;
-                existing.CommandText = @"SELECT p.AddressId
-                                         FROM Customers c
-                                         INNER JOIN Persons p ON p.Id = c.PersonId
-                                         WHERE p.Id = @id";
+                existing.CommandText = @"SELECT AddressId
+                                         FROM Persons
+                                         WHERE Id = @id";
                 existing.Parameters.Add("@id", SqlDbType.Int).Value = updatedCustomer.Id;
                 object? result = existing.ExecuteScalar();
                 if (result is null)
@@ -131,24 +117,6 @@ namespace ErpCli.Data
 
                 int addressId = GetOrCreateAddressId(updatedCustomer.Address, connection, transaction);
 
-                using SqlCommand customerCmd = connection.CreateCommand();
-                customerCmd.Transaction = transaction;
-                customerCmd.CommandText = @"UPDATE Customers
-                                            SET LastPurchaseAt = @LastPurchaseAt,
-                                                CompanyId = @CompanyId
-                                            FROM Customers c
-                                            INNER JOIN Persons p ON p.Id = c.PersonId
-                                            WHERE p.Id = @id;";
-                // customerCmd.Parameters.Add("@LastPurchaseAt", SqlDbType.DateTime2).Value =
-                    //(object?)updatedCustomer.LastPurchaseAt ?? DBNull.Value;
-                customerCmd.Parameters.Add("@CompanyId", SqlDbType.Int).Value = (object)updatedCustomer.CompanyId;
-                customerCmd.Parameters.Add("@id", SqlDbType.Int).Value = updatedCustomer.Id;
-
-                if (customerCmd.ExecuteNonQuery() == 0)
-                {
-                    throw new InvalidOperationException($"Kunden med Id {updatedCustomer.Id} findes ikke.");
-                }
-
                 using SqlCommand personCmd = connection.CreateCommand();
                 personCmd.Transaction = transaction;
                 personCmd.CommandText = @"UPDATE Persons
@@ -156,16 +124,21 @@ namespace ErpCli.Data
                                               LastName = @LastName,
                                               Phone = @Phone,
                                               Email = @Email,
-                                              AddressId = @AddressId
+                                              AddressId = @AddressId,
+                                              CompanyId = @CompanyId
                                           WHERE Id = @id;";
                 personCmd.Parameters.Add("@FirstName", SqlDbType.NVarChar).Value = updatedCustomer.FirstName;
                 personCmd.Parameters.Add("@LastName", SqlDbType.NVarChar).Value = updatedCustomer.LastName;
                 personCmd.Parameters.Add("@Phone", SqlDbType.NVarChar).Value = updatedCustomer.Phone;
                 personCmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = updatedCustomer.Email;
                 personCmd.Parameters.Add("@AddressId", SqlDbType.Int).Value = addressId;
+                personCmd.Parameters.Add("@CompanyId", SqlDbType.Int).Value = updatedCustomer.CompanyId;
                 personCmd.Parameters.Add("@id", SqlDbType.Int).Value = updatedCustomer.Id;
 
-                personCmd.ExecuteNonQuery();
+                if (personCmd.ExecuteNonQuery() == 0)
+                {
+                    throw new InvalidOperationException($"Kunden med Id {updatedCustomer.Id} findes ikke.");
+                }
 
                 DeleteAddressIfNotReferenced(oldAddressId, connection, transaction);
 
@@ -196,10 +169,9 @@ namespace ErpCli.Data
 
                 using SqlCommand existing = connection.CreateCommand();
                 existing.Transaction = transaction;
-                existing.CommandText = @"SELECT p.Id, p.AddressId
-                                         FROM Customers c
-                                         JOIN Persons p ON c.PersonId = p.Id
-                                         WHERE c.Id = @id";
+                existing.CommandText = @"SELECT Id, AddressId
+                                         FROM Persons
+                                         WHERE Id = @id";
                 existing.Parameters.Add("@id", SqlDbType.Int).Value = id;
                 using (SqlDataReader reader = existing.ExecuteReader())
                 {
@@ -230,32 +202,31 @@ namespace ErpCli.Data
 
         /// <summary>
         /// Maps the current row of the given reader to a Customer. Column order must match
-        /// the SELECT statements in this file: Id, LastPurchasedAt, FirstName, LastName, Phone,
-        /// Email, Street, Number, PostalCode, City, CompanyId.
+        /// the SELECT statements in this file: Id, FirstName, LastName, Phone, Email,
+        /// Street, Number, PostalCode, City, Country, CompanyId, CompanyName.
         /// </summary>
         private static Person ReadCustomer(SqlDataReader reader)
         {
             return new Person
             {
                 Id              = reader.GetInt32(0),
-                //LastPurchaseAt  = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
 
-                FirstName       = reader.GetString(3),
-                LastName        = reader.GetString(4),
-                Phone           = reader.GetString(5),
-                Email           = reader.GetString(6),
+                FirstName       = reader.GetString(1),
+                LastName        = reader.GetString(2),
+                Phone           = reader.GetString(3),
+                Email           = reader.GetString(4),
 
-                Street          = reader.GetString(7),
-                Number          = reader.GetString(8),
-                PostalCode      = reader.GetString(9),
-                City            = reader.GetString(10),
-                Country         = reader.GetString(11),
-                
-                CompanyId       = reader.GetInt32(12),
+                Street          = reader.GetString(5),
+                Number          = reader.GetString(6),
+                PostalCode      = reader.GetString(7),
+                City            = reader.GetString(8),
+                Country         = reader.GetString(9),
+
+                CompanyId       = reader.GetInt32(10),
                 Company         = new Company
                 {
-                    Id = reader.GetInt32(12),
-                    Name = reader.GetString(13)
+                    Id = reader.GetInt32(10),
+                    Name = reader.GetString(11)
                 }
             };
         }
