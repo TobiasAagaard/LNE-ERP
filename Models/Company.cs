@@ -4,6 +4,7 @@ namespace ErpCli.Models
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
+        public override string ToString() => Name;
         public Currency Currency { get; set; }
         public ICollection<Person> ContactPersons { get; set; } = new List<Person>();
         public DateTime? LastPurchaseAt { get; set; }
