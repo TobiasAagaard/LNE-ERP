@@ -128,7 +128,8 @@ namespace ErpCli.Data
             using (SqlCommand command = connection.CreateCommand())
             {
                 command.Transaction = transaction;
-                command.CommandText = @"DELETE FROM Companies WHERE Id = @id";
+                command.CommandText = @"DELETE FROM Persons WHERE CompanyId = @id;
+                                        DELETE FROM Companies WHERE Id = @id";
                 command.Parameters.AddWithValue("@id", id);
                 if (command.ExecuteNonQuery() == 0)
                 {
