@@ -11,7 +11,9 @@ namespace ErpCli.Models
         public List<OrderLine> OrderLineList = new List<OrderLine>();
         public decimal? OrderTotal =>
             OrderLineList.Sum(orderLine => orderLine.Quantity * (orderLine.Product?.Price ?? 0));
-        public Customer? customer { get; set; }
+
+        public Company? Company { get; set; }
+        public Person? ContactPerson { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? FullName => $"{FirstName} {LastName}";

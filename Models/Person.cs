@@ -38,5 +38,42 @@ namespace ErpCli.Models
             get => Address.Country;
             set => Address.Country = value ?? string.Empty;
         }
+        public Company? Company { get; set; }
+        public int? CompanyId
+        {
+            get => Company?.Id;
+            set
+            {
+                if (value == null)
+                {
+                    throw new InvalidOperationException("Kan ikke sette FirmaId når Firma er null.");
+                }
+                else
+                {
+                    if (Company == null)
+                    {
+                        throw new InvalidOperationException("Kan ikke sette FirmaId når Firma er null.");
+                    }
+                    else
+                    {
+                        Company.Id = value.Value;
+                    }
+                }
+            }
+        }
+        public string CompanyName
+        {
+            get => Company?.Name ?? string.Empty;
+            set
+            {
+                if (Company == null)
+                {
+                    throw new InvalidOperationException("Kan ikke sette Firma-navn når Firma er null.");
+                }
+                Company.Name = value ?? string.Empty;
+            }
+        }
+
+
     }
 }

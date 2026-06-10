@@ -18,7 +18,7 @@ namespace ErpCli.Views
         protected override void Draw()
         {
             ExitOnEscape();
-            Customer? customer = Database.Instance.GetCustomerById(header.CustomerId);
+            Person? customer = Database.Instance.GetCustomerById(header.CustomerId);
 
             Console.WriteLine("Tryk F2 for at rediger ordrehovedet");
             Console.WriteLine("Tryk F3 for at redigere en ordrelinje");
