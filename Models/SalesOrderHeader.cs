@@ -5,7 +5,6 @@ namespace ErpCli.Models
         public int OrderNumber { get; set;}
         public DateTime OrderCreatedAt { get; set; }
         public DateTime? OrderCompletedAt { get; set;}
-        public int CustomerId { get; set; }
         public OrderStatus Status { get; set; }
         public List<int> OrderLineIdList = new List<int>();
         public List<OrderLine> OrderLineList = new List<OrderLine>();
@@ -14,9 +13,10 @@ namespace ErpCli.Models
 
         public Company? Company { get; set; }
         public Person? ContactPerson { get; set; }
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? FullName => $"{FirstName} {LastName}";
+
+        public int CompanyId => Company?.Id ?? throw new InvalidOperationException("Firmaet skal være valgt");
+        public string CompanyName => Company?.Name ?? throw new InvalidOperationException("Firmaet skal være valgt");
+        public string ContactPersonName => ContactPerson?.FullName ?? string.Empty;
 
         public enum OrderStatus
         {

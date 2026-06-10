@@ -18,7 +18,6 @@ namespace ErpCli.Views
         protected override void Draw()
         {
             ExitOnEscape();
-            Person? customer = Database.Instance.GetCustomerById(header.CustomerId);
 
             Console.WriteLine("Tryk F2 for at rediger ordrehovedet");
             Console.WriteLine("Tryk F3 for at redigere en ordrelinje");
@@ -33,8 +32,8 @@ namespace ErpCli.Views
             Console.WriteLine($"Ordrenummer: {header.OrderNumber}");
             Console.WriteLine($"Dato oprettet: {header.OrderCreatedAt}");
             Console.WriteLine($"Dato færdig: {header.OrderCompletedAt}");
-            Console.WriteLine($"Kundenummer: {header.CustomerId}");
-            Console.WriteLine($"Navn: {header.FullName}");
+            Console.WriteLine($"Virksomhed: {header.CompanyName} (#{header.CompanyId})");
+            Console.WriteLine($"Kontaktperson: {header.ContactPersonName}");
 
             ListPage<OrderLine> listPage = new();
             

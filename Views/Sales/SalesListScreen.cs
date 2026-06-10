@@ -28,8 +28,8 @@ namespace ErpCli.Views
             
             listPage.AddColumn("Salgsordrenummer", nameof(SalesOrderHeader.OrderNumber), 20);
             listPage.AddColumn("Dato", nameof(SalesOrderHeader.OrderCreatedAt));
-            listPage.AddColumn("Kundenummer", nameof(SalesOrderHeader.CustomerId));
-            listPage.AddColumn("Navn", nameof(SalesOrderHeader.FullName));
+            listPage.AddColumn("Virksomhed", nameof(SalesOrderHeader.CompanyName));
+            listPage.AddColumn("Kontaktperson", nameof(SalesOrderHeader.ContactPersonName));
             listPage.AddColumn("Beløb", nameof(SalesOrderHeader.OrderTotal));
 
 

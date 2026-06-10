@@ -28,8 +28,25 @@ namespace ErpCli.Views
 
             Form<SalesOrderHeader> form = new();
 
+            form.SearchBox("Virksomhed", nameof(salesOrderHeader.Company), term =>
+                Database.Instance.GetAllCompanies()
+                    .Where(c =>
+                        (c.Name ?? "").Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                        c.Id.ToString().Contains(term))
+                    .Select(c => ($"{c.Name}", (object)c))
+                    .ToList());
+
+            form.SearchBox("Kontaktperson", nameof(salesOrderHeader.ContactPerson), term =>
+                Database.Instance.GetAllCustomers()
+                    .Where(p => salesOrderHeader.Company == null || p.CompanyId == salesOrderHeader.Company.Id)
+                    .Where(p =>
+                        (p.FullName ?? "").Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                        p.Id.ToString().Contains(term))
+                    .Select(p => ($"{p.FullName} (#{p.Id})", (object)p))
+                    .ToList());
+
             form.SelectBox("Status", nameof(salesOrderHeader.Status));
-            
+
             foreach (var s in Enum.GetValues<SalesOrderHeader.OrderStatus>())
             {
                 form.AddOption("Status", s.ToString(), s);
@@ -37,7 +54,12 @@ namespace ErpCli.Views
 
             if (form.Edit(salesOrderHeader))
             {
-                
+                if (salesOrderHeader.Company == null)
+                {
+                    Console.WriteLine("Der skal vælges en virksomhed for ordren");
+                    return;
+                }
+
                 if (salesOrderHeader.OrderNumber != 0)
                 {
                     if (salesOrderHeader.Status == SalesOrderHeader.OrderStatus.Færdig)
