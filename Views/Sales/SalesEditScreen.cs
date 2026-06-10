@@ -28,17 +28,14 @@ namespace ErpCli.Views
 
             Form<SalesOrderHeader> form = new();
 
-            // Pick the company that gets billed (the debtor). Required.
             form.SearchBox("Virksomhed", nameof(salesOrderHeader.Company), term =>
                 Database.Instance.GetAllCompanies()
                     .Where(c =>
                         (c.Name ?? "").Contains(term, StringComparison.OrdinalIgnoreCase) ||
                         c.Id.ToString().Contains(term))
-                    .Select(c => ($"{c.Name} (#{c.Id})", (object)c))
+                    .Select(c => ($"{c.Name}", (object)c))
                     .ToList());
 
-            // Pick the contact person who placed the order. Optional, and limited to
-            // the chosen company's contacts (evaluated lazily when the user searches).
             form.SearchBox("Kontaktperson", nameof(salesOrderHeader.ContactPerson), term =>
                 Database.Instance.GetAllCustomers()
                     .Where(p => salesOrderHeader.Company == null || p.CompanyId == salesOrderHeader.Company.Id)

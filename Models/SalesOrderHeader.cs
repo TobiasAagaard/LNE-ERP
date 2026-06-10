@@ -11,14 +11,11 @@ namespace ErpCli.Models
         public decimal? OrderTotal =>
             OrderLineList.Sum(orderLine => orderLine.Quantity * (orderLine.Product?.Price ?? 0));
 
-        // The company is the debtor that gets billed (required); the contact person
-        // is the individual at that company who placed the order (optional).
         public Company? Company { get; set; }
         public Person? ContactPerson { get; set; }
 
-        // Read-only helpers used by the list/details views for display.
-        public int CompanyId => Company?.Id ?? 0;
-        public string CompanyName => Company?.Name ?? string.Empty;
+        public int CompanyId => Company?.Id ?? throw new InvalidOperationException("Firmaet skal være valgt");
+        public string CompanyName => Company?.Name ?? throw new InvalidOperationException("Firmaet skal være valgt");
         public string ContactPersonName => ContactPerson?.FullName ?? string.Empty;
 
         public enum OrderStatus
