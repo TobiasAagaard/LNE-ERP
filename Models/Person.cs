@@ -5,8 +5,6 @@ namespace ErpCli.Models
     public class Person
     {
         public int Id { get; set; }
-        public int CompanyId { get; set; }
-        public int AddressId { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string FullName => $"{FirstName} {LastName}";
@@ -41,6 +39,28 @@ namespace ErpCli.Models
             set => Address.Country = value ?? string.Empty;
         }
         public Company? Company { get; set; }
+        public int? CompanyId
+        {
+            get => Company?.Id;
+            set
+            {
+                if (value == null)
+                {
+                    throw new InvalidOperationException("Kan ikke sette FirmaId når Firma er null.");
+                }
+                else
+                {
+                    if (Company == null)
+                    {
+                        throw new InvalidOperationException("Kan ikke sette FirmaId når Firma er null.");
+                    }
+                    else
+                    {
+                        Company.Id = value.Value;
+                    }
+                }
+            }
+        }
         public string CompanyName
         {
             get => Company?.Name ?? string.Empty;
@@ -48,11 +68,12 @@ namespace ErpCli.Models
             {
                 if (Company == null)
                 {
-                    Company = new Company();
+                    throw new InvalidOperationException("Kan ikke sette Firma-navn når Firma er null.");
                 }
                 Company.Name = value ?? string.Empty;
             }
         }
+
 
     }
 }

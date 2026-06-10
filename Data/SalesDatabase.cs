@@ -10,7 +10,7 @@ namespace ErpCli.Data
         {
             using SqlConnection connection = GetConnection();
             using SqlCommand headerCmd = connection.CreateCommand();
-            headerCmd.CommandText = @"SELECT OrderNumber, OrderCreatedAt, OrderCompletedAt, ContactPersonId, FirstName, LastName, Status
+            headerCmd.CommandText = @"SELECT OrderNumber, OrderCreatedAt, OrderCompletedAt, ContactPersonId, FirstName, LastName, Status, SalesOrderHeaders.CompanyId
                                         FROM SalesOrderHeaders
                                         INNER JOIN Persons p
                                         ON ContactPersonId = p.Id
@@ -27,7 +27,7 @@ namespace ErpCli.Data
             List<SalesOrderHeader> headers = new();
             using SqlConnection connection = GetConnection();
             using SqlCommand cmd = connection.CreateCommand();
-            cmd.CommandText = @"SELECT OrderNumber, OrderCreatedAt, OrderCompletedAt, ContactPersonId, FirstName, LastName, Status
+            cmd.CommandText = @"SELECT OrderNumber, OrderCreatedAt, OrderCompletedAt, ContactPersonId, FirstName, LastName, Status, SalesOrderHeaders.CompanyId
                                 FROM SalesOrderHeaders
                                 INNER JOIN Persons p
                                 ON ContactPersonId = p.Id;";      
@@ -45,20 +45,18 @@ namespace ErpCli.Data
             {
                 SqlCommand cmd = connection.CreateCommand();
                 cmd.Transaction = transaction;
-                cmd.CommandText = @"INSERT INTO SalesOrderHeaders (OrderCreatedAt, OrderCompletedAt, ContactPersonId, Status)
-                                    VALUES (@OrderCreatedAt, @OrderCompletedAt, @ContactPersonId, @Status)";
+                cmd.CommandText = @"INSERT INTO SalesOrderHeaders (OrderCreatedAt, OrderCompletedAt, ContactPersonId, Status, CompanyId)
+                                    VALUES (@OrderCreatedAt, @OrderCompletedAt, @ContactPersonId, @Status, @CompanyId);";
                 BindHeaderParameters(cmd, SalesOrderHeader);
                 cmd.ExecuteNonQuery();
 
                 using SqlCommand customerCmd = connection.CreateCommand();
                 customerCmd.Transaction = transaction;
-                customerCmd.CommandText = @"UPDATE p
-                                            SET p.LastPurchaseAt = @LastPurchaseAt
-                                            FROM Persons p
-                                            INNER JOIN SalesOrderHeaders s ON s.ContactPersonId = p.Id
-                                            WHERE p.Id = @id;";
+                customerCmd.CommandText = @"UPDATE Persons
+                                        SET LastPurchaseAt = @LastPurchaseAt
+                                        WHERE Id = @id;";
                 customerCmd.Parameters.AddWithValue("@LastPurchaseAt", DateTime.Now);
-                customerCmd.Parameters.AddWithValue("@id", SalesOrderHeader.ContactPersonId);
+                customerCmd.Parameters.AddWithValue("@id", SalesOrderHeader.ContactPerson?.Id ?? (object?)DBNull.Value);
                 customerCmd.ExecuteNonQuery();
                 transaction.Commit();
             }
@@ -124,10 +122,17 @@ namespace ErpCli.Data
                 OrderNumber         = reader.GetInt32(0),
                 OrderCreatedAt      = reader.GetDateTime(1),
                 OrderCompletedAt    = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
-                ContactPersonId     = reader.GetInt32(3),
-                FirstName           = reader.GetString(4),
-                LastName            = reader.GetString(5),
-                Status              = (SalesOrderHeader.OrderStatus)reader.GetInt32(6)
+                ContactPerson       = reader.IsDBNull(3) ? null : new Person
+                {
+                    Id = reader.GetInt32(3),
+                    FirstName = reader.GetString(4),
+                    LastName = reader.GetString(5)
+                },
+                Status              = (SalesOrderHeader.OrderStatus)reader.GetInt32(6),
+                Company             = reader.IsDBNull(7) ? null : new Company
+                {
+                    Id = reader.GetInt32(7)
+                }
             };
         }
         private static void BindHeaderParameters(SqlCommand cmd, SalesOrderHeader h)
@@ -135,7 +140,6 @@ namespace ErpCli.Data
             cmd.Parameters.AddWithValue("@OrderNumber", (object?)h.OrderNumber ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@OrderCreatedAt", (object?)h.OrderCreatedAt ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@OrderCompletedAt", (object?)h.OrderCompletedAt ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@ContactPersonId", (object?)h.ContactPersonId ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@Status", (object?)h.Status ?? DBNull.Value);
         }
     }   

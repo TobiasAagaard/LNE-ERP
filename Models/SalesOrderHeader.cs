@@ -3,8 +3,6 @@ namespace ErpCli.Models
     public class SalesOrderHeader
     {
         public int OrderNumber { get; set;}
-        public int CompanyId { get; set; }
-        public int ContactPersonId { get; set; }
         public DateTime OrderCreatedAt { get; set; }
         public DateTime? OrderCompletedAt { get; set;}
         public int CustomerId { get; set; }
