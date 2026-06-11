@@ -134,44 +134,6 @@ dotnet test
 dotnet test --filter "TestClassName"
 ```
 
-## Troubleshooting
-
-### Database Connection Issues
-
-**Error:** `Cannot connect to localhost,1433`
-- Ensure SQL Server is running: `docker ps | grep erp-sql`
-- Check credentials in `appsettings.Local.json`
-- Verify MSSQL container is healthy: `docker logs erp-sql`
-
-**Error:** `Login failed for user 'sa'`
-- Verify password matches Docker container startup (`MSSQL_SA_PASSWORD`)
-- Update `appsettings.Local.json` with correct password
-
-### Build Issues
-
-**Error:** `TECHCOOL project not found`
-- Ensure both repositories are cloned as siblings
-- Verify path: `../TECHCOOL/` or same parent directory as `ERP-CLI/`
-
-**Error:** `.NET 10 not found`
-- Download [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
-- Verify installation: `dotnet --version`
-
-## Environment Configuration
-
-Create `appsettings.Local.json` (git-ignored) with these optional overrides:
-
-```json
-{
-  "Database": {
-    "DataSource": "your-server",
-    "UserId": "sa",
-    "Password": "your-password",
-    "InitialCatalog": "ERP_CLI"
-  }
-}
-```
-
 ## Contributors
 
 - [Nicklas](https://github.com/NickRaics)
