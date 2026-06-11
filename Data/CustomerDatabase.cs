@@ -58,9 +58,10 @@ namespace ErpCli.Data
             using SqlConnection connection = GetConnection();
             using SqlTransaction transaction = connection.BeginTransaction();
 
-            int addressId = GetOrCreateAddressId(customer.Address, connection, transaction);
             try
             {
+                int addressId = GetCompanyAddressId(customer.CompanyId, connection, transaction);
+
                 using SqlCommand personCmd = connection.CreateCommand();
                 personCmd.Transaction = transaction;
 
@@ -115,7 +116,7 @@ namespace ErpCli.Data
                 }
                 oldAddressId = Convert.ToInt32(result);
 
-                int addressId = GetOrCreateAddressId(updatedCustomer.Address, connection, transaction);
+                int addressId = GetCompanyAddressId(updatedCustomer.CompanyId, connection, transaction);
 
                 using SqlCommand personCmd = connection.CreateCommand();
                 personCmd.Transaction = transaction;
@@ -222,7 +223,6 @@ namespace ErpCli.Data
                 City            = reader.GetString(8),
                 Country         = reader.GetString(9),
 
-                CompanyId       = reader.GetInt32(10),
                 Company         = new Company
                 {
                     Id = reader.GetInt32(10),

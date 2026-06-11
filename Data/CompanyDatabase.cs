@@ -100,8 +100,20 @@ namespace ErpCli.Data
                     transaction.Rollback();
                     throw new InvalidOperationException($"Virksomheden med Id {updatedCompany.Id} findes ikke.");
                 }
-                DeleteAddressIfNotReferenced(oldAddressId, connection, transaction);
             }
+
+            using (SqlCommand persons = connection.CreateCommand())
+            {
+                persons.Transaction = transaction;
+                persons.CommandText = @"UPDATE Persons
+                                        SET AddressId = @addressId
+                                        WHERE CompanyId = @companyId";
+                persons.Parameters.AddWithValue("@companyId", updatedCompany.Id);
+                persons.Parameters.AddWithValue("@addressId", addressId);
+                persons.ExecuteNonQuery();
+            }
+
+            DeleteAddressIfNotReferenced(oldAddressId, connection, transaction);
             transaction.Commit();
         }
         public void DeleteCompany(int id )
@@ -139,6 +151,29 @@ namespace ErpCli.Data
                 DeleteAddressIfNotReferenced(oldAddressId, connection, transaction);
             }
             transaction.Commit();
+        }
+
+        /// <summary>
+        /// Returns the AddressId of the company with the given Id. Throws if the company does not exist.
+        /// </summary>
+        private static int GetCompanyAddressId(int? companyId, SqlConnection connection, SqlTransaction transaction)
+        {
+            if (companyId is null)
+            {
+                throw new InvalidOperationException("Kunden skal være tilknyttet et firma.");
+            }
+
+            using SqlCommand cmd = connection.CreateCommand();
+            cmd.Transaction = transaction;
+            cmd.CommandText = @"SELECT AddressId FROM Companies WHERE Id = @companyId";
+            cmd.Parameters.AddWithValue("@companyId", companyId.Value);
+
+            object? result = cmd.ExecuteScalar();
+            if (result is null)
+            {
+                throw new InvalidOperationException($"Virksomheden med Id {companyId} findes ikke.");
+            }
+            return Convert.ToInt32(result);
         }
 
         private Company ReadCompany(SqlDataReader reader)
