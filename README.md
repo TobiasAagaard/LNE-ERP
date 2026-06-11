@@ -136,6 +136,6 @@ dotnet test --filter "TestClassName"
 
 ## Contributors
 
-- [Nicklas](https://github.com/NickRaics)
-- [Tobias](https://github.com/TobiasAagaard)
-- [Malthe](https://github.com/Malthebk3)
+See all contributors on [GitHub](https://github.com/TobiasAagaard/ERP-CLI/graphs/contributors)
+
+[![Contributors](https://contrib.rocks/image?repo=TobiasAagaard/ERP-CLI)](https://github.com/TobiasAagaard/ERP-CLI/graphs/contributors)
