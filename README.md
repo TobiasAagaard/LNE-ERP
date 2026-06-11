@@ -9,7 +9,6 @@ A command-line ERP system built in C# / .NET 10 for **LNE Security A/S**, a fict
 - **Sales Orders** — Create sales orders with multiple order lines, track completion status
 - **Customer Management** — Manage customer records with contact information
 - **Order Line Management** — Edit individual order lines within sales orders
-- **Auto-Migrations** — Database schema automatically initializes on first run
 
 ## Prerequisites
 
