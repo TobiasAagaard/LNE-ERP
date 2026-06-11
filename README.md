@@ -2,6 +2,14 @@
 
 A command-line ERP system built in C# / .NET 10 for **LNE Security A/S**, a fictional Danish IT-services company based in Aalborg. The architecture is modular, designed to support multiple developers.
 
+## Features
+
+- **Company Management** — Register and manage company information with address details
+- **Product Catalog** — Create and maintain products with pricing
+- **Sales Orders** — Create sales orders with multiple order lines, track completion status
+- **Customer Management** — Manage customer records with contact information
+- **Order Line Management** — Edit individual order lines within sales orders
+
 ## Prerequisites
 
 - [.NET 10 SDK (preview)](https://dotnet.microsoft.com/download/dotnet/10.0)
@@ -22,8 +30,6 @@ Projects/
   TECHCOOL/
   ERP-CLI/
 ```
-
-
 
 **2. Start SQL Server**
 
@@ -57,20 +63,39 @@ dotnet run
 
 Three layers — **Views**, **Models**, **Data** — wired through a `Database.Instance` singleton. Navigation uses TECHCOOL's `Screen` and `Menu` primitives.
 
+### Layer Overview
+
+| Layer | Purpose | Examples |
+|-------|---------|----------|
+| **Views** | User interface screens and menus | `CompanyListScreen`, `SalesEditScreen` |
+| **Models** | Data models representing domain entities | `Company`, `Product`, `SalesOrderHeader` |
+| **Data** | Database access and queries | `CompanyDatabase`, `OrderLineDatabase` |
+
+### Navigation Flow
+
 ```mermaid
 flowchart LR
     Main([MainMenu])
 
     Main --> CL[CompanyListScreen]   --> CD[CompanyDetailsScreen]   --> CE[CompanyEditScreen]
-    Main --> PL[ProductListPage]     --> PD[ProductDetailsScreen]   --> PE[ProductEditorScreen]
+    Main --> PL[ProductListScreen]   --> PD[ProductDetailsScreen]   --> PE[ProductEditScreen]
     Main --> SL[SalesListScreen]     --> SD[SalesDetailsScreen]     --> SE[SalesEditScreen]
     SD --> OLE[OrderLineEditScreen]
     Main --> CuL[CustomerListScreen] --> CuD[CustomerDetailsScreen] --> CuE[CustomerEditScreen]
 ```
 
-Each list screen loads records, registers function keys (F1/F3 create, F2 edit, F5 delete), and opens a details screen on `Enter`.
+### Screen Behavior
 
-Sales orders are a header (`SalesOrderHeader`) with many lines (`OrderLine`). Setting status to `Færdig` stamps `OrderCompletedAt` automatically.
+Each list screen loads records, registers function keys, and opens related screens:
+- **F1/F3** — Create new record
+- **F2** — Edit selected record
+- **F5** — Delete selected record
+- **Enter** — View details of selected record
+
+### Data Model
+
+Sales orders are a header (`SalesOrderHeader`) with many lines (`OrderLine`). Setting status to `Færdig` automatically stamps `OrderCompletedAt`.
+
 
 ## Tests
 
@@ -82,6 +107,4 @@ dotnet test
 
 ## Contributors
 
-- [Nicklas](https://github.com/NickRaics)
-- [Tobias](https://github.com/TobiasAagaard)
-- [Malthe](https://github.com/Malthebk3)
+[![Contributors](https://contrib.rocks/image?repo=TobiasAagaard/ERP-CLI)](https://github.com/TobiasAagaard/ERP-CLI/graphs/contributors)
