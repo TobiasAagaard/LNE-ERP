@@ -2,6 +2,15 @@
 
 A command-line ERP system built in C# / .NET 10 for **LNE Security A/S**, a fictional Danish IT-services company based in Aalborg. The architecture is modular, designed to support multiple developers.
 
+## Features
+
+- **Company Management** — Register and manage company information with address details
+- **Product Catalog** — Create and maintain products with pricing
+- **Sales Orders** — Create sales orders with multiple order lines, track completion status
+- **Customer Management** — Manage customer records with contact information
+- **Order Line Management** — Edit individual order lines within sales orders
+- **Auto-Migrations** — Database schema automatically initializes on first run
+
 ## Prerequisites
 
 - [.NET 10 SDK (preview)](https://dotnet.microsoft.com/download/dotnet/10.0)
@@ -22,8 +31,6 @@ Projects/
   TECHCOOL/
   ERP-CLI/
 ```
-
-
 
 **2. Start SQL Server**
 
@@ -57,20 +64,73 @@ dotnet run
 
 Three layers — **Views**, **Models**, **Data** — wired through a `Database.Instance` singleton. Navigation uses TECHCOOL's `Screen` and `Menu` primitives.
 
+### Layer Overview
+
+| Layer | Purpose | Examples |
+|-------|---------|----------|
+| **Views** | User interface screens and menus | `CompanyListScreen`, `SalesEditScreen` |
+| **Models** | Data models representing domain entities | `Company`, `Product`, `SalesOrderHeader` |
+| **Data** | Database access and queries | `CompanyDatabase`, `OrderLineDatabase` |
+
+### Navigation Flow
+
 ```mermaid
 flowchart LR
     Main([MainMenu])
 
     Main --> CL[CompanyListScreen]   --> CD[CompanyDetailsScreen]   --> CE[CompanyEditScreen]
-    Main --> PL[ProductListPage]     --> PD[ProductDetailsScreen]   --> PE[ProductEditorScreen]
+    Main --> PL[ProductListScreen]   --> PD[ProductDetailsScreen]   --> PE[ProductEditScreen]
     Main --> SL[SalesListScreen]     --> SD[SalesDetailsScreen]     --> SE[SalesEditScreen]
     SD --> OLE[OrderLineEditScreen]
     Main --> CuL[CustomerListScreen] --> CuD[CustomerDetailsScreen] --> CuE[CustomerEditScreen]
 ```
 
-Each list screen loads records, registers function keys (F1/F3 create, F2 edit, F5 delete), and opens a details screen on `Enter`.
+### Screen Behavior
 
-Sales orders are a header (`SalesOrderHeader`) with many lines (`OrderLine`). Setting status to `Færdig` stamps `OrderCompletedAt` automatically.
+Each list screen loads records, registers function keys, and opens related screens:
+- **F1/F3** — Create new record
+- **F2** — Edit selected record
+- **F5** — Delete selected record
+- **Enter** — View details of selected record
+
+### Data Model
+
+Sales orders are a header (`SalesOrderHeader`) with many lines (`OrderLine`). Setting status to `Færdig` automatically stamps `OrderCompletedAt`.
+
+## Project Structure
+
+```
+ERP-CLI/
+├── Views/                    # User interface screens
+│   ├── MainMenu.cs
+│   ├── Company/             # Company management screens
+│   ├── Customer/            # Customer management screens
+│   ├── Product/             # Product catalog screens
+│   └── Sales/               # Sales order screens
+├── Models/                  # Domain entities
+│   ├── Company.cs
+│   ├── Product.cs
+│   ├── SalesOrderHeader.cs
+│   ├── OrderLine.cs
+│   ├── Person.cs
+│   └── Address.cs
+├── Data/                    # Database access layer
+│   ├── Database.cs          # Connection singleton
+│   ├── CompanyDatabase.cs
+│   ├── ProductDatabase.cs
+│   ├── OrderLineDatabase.cs
+│   └── ...
+├── Migrations/              # SQL database migrations
+│   ├── 0001_init.sql
+│   ├── 0002_AddFloorAddress.sql
+│   └── Migrator.cs
+├── Helpers/                 # Utility classes
+│   └── ExceptionHelper.cs
+├── ERP-CLI.Tests/           # Unit tests
+│   ├── OrderTotalTest.cs
+│   └── ProfitPercentTests.cs
+└── appsettings.Local.json   # Configuration (git-ignored)
+```
 
 ## Tests
 
@@ -78,6 +138,72 @@ Unit tests use [xUnit](https://xunit.net/) and follow `MethodName_Scenario_Expec
 
 ```bash
 dotnet test
+```
+
+## Development
+
+### Adding a New Feature
+
+1. **Create the Model** in `Models/` — define the data structure
+2. **Create the Database Class** in `Data/` — implement CRUD operations
+3. **Create the Views** in `Views/` — list, details, and edit screens
+4. **Register in MainMenu** — add navigation entry to `MainMenu.cs`
+5. **Add Tests** in `ERP-CLI.Tests/` — verify business logic
+6. **Create Migration** in `Migrations/` — update database schema if needed
+
+### Running Locally
+
+```bash
+# Build and run
+dotnet build
+dotnet run
+
+# Run with watch mode (auto-rebuild on changes)
+dotnet watch run
+
+# Run tests
+dotnet test
+
+# Run specific test
+dotnet test --filter "TestClassName"
+```
+
+## Troubleshooting
+
+### Database Connection Issues
+
+**Error:** `Cannot connect to localhost,1433`
+- Ensure SQL Server is running: `docker ps | grep erp-sql`
+- Check credentials in `appsettings.Local.json`
+- Verify MSSQL container is healthy: `docker logs erp-sql`
+
+**Error:** `Login failed for user 'sa'`
+- Verify password matches Docker container startup (`MSSQL_SA_PASSWORD`)
+- Update `appsettings.Local.json` with correct password
+
+### Build Issues
+
+**Error:** `TECHCOOL project not found`
+- Ensure both repositories are cloned as siblings
+- Verify path: `../TECHCOOL/` or same parent directory as `ERP-CLI/`
+
+**Error:** `.NET 10 not found`
+- Download [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- Verify installation: `dotnet --version`
+
+## Environment Configuration
+
+Create `appsettings.Local.json` (git-ignored) with these optional overrides:
+
+```json
+{
+  "Database": {
+    "DataSource": "your-server",
+    "UserId": "sa",
+    "Password": "your-password",
+    "InitialCatalog": "ERP_CLI"
+  }
+}
 ```
 
 ## Contributors
