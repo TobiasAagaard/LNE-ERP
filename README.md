@@ -97,40 +97,6 @@ Each list screen loads records, registers function keys, and opens related scree
 
 Sales orders are a header (`SalesOrderHeader`) with many lines (`OrderLine`). Setting status to `Færdig` automatically stamps `OrderCompletedAt`.
 
-## Project Structure
-
-```
-ERP-CLI/
-├── Views/                    # User interface screens
-│   ├── MainMenu.cs
-│   ├── Company/             # Company management screens
-│   ├── Customer/            # Customer management screens
-│   ├── Product/             # Product catalog screens
-│   └── Sales/               # Sales order screens
-├── Models/                  # Domain entities
-│   ├── Company.cs
-│   ├── Product.cs
-│   ├── SalesOrderHeader.cs
-│   ├── OrderLine.cs
-│   ├── Person.cs
-│   └── Address.cs
-├── Data/                    # Database access layer
-│   ├── Database.cs          # Connection singleton
-│   ├── CompanyDatabase.cs
-│   ├── ProductDatabase.cs
-│   ├── OrderLineDatabase.cs
-│   └── ...
-├── Migrations/              # SQL database migrations
-│   ├── 0001_init.sql
-│   ├── 0002_AddFloorAddress.sql
-│   └── Migrator.cs
-├── Helpers/                 # Utility classes
-│   └── ExceptionHelper.cs
-├── ERP-CLI.Tests/           # Unit tests
-│   ├── OrderTotalTest.cs
-│   └── ProfitPercentTests.cs
-└── appsettings.Local.json   # Configuration (git-ignored)
-```
 
 ## Tests
 
