@@ -72,7 +72,7 @@ namespace ErpCli.Models
                 }
                 Company.Name = value ?? string.Empty;
             }
-        }
+        } 
 
 
     }
