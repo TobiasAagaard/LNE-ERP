@@ -106,34 +106,6 @@ Unit tests use [xUnit](https://xunit.net/) and follow `MethodName_Scenario_Expec
 dotnet test
 ```
 
-## Development
-
-### Adding a New Feature
-
-1. **Create the Model** in `Models/` — define the data structure
-2. **Create the Database Class** in `Data/` — implement CRUD operations
-3. **Create the Views** in `Views/` — list, details, and edit screens
-4. **Register in MainMenu** — add navigation entry to `MainMenu.cs`
-5. **Add Tests** in `ERP-CLI.Tests/` — verify business logic
-6. **Create Migration** in `Migrations/` — update database schema if needed
-
-### Running Locally
-
-```bash
-# Build and run
-dotnet build
-dotnet run
-
-# Run with watch mode (auto-rebuild on changes)
-dotnet watch run
-
-# Run tests
-dotnet test
-
-# Run specific test
-dotnet test --filter "TestClassName"
-```
-
 ## Contributors
 
 [![Contributors](https://contrib.rocks/image?repo=TobiasAagaard/ERP-CLI)](https://github.com/TobiasAagaard/ERP-CLI/graphs/contributors)
