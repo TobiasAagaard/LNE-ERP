@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<title>Proformafaktura 401 — LNE Security A/S</title>
+<style>
+  :root {
+    --brand:       #1B5E7B;
+    --brand-light: #7FB8CB;
+    --ink:         #2B2F33;
+    --ink-soft:    #6E7378;
+    --rule:        #2B2F33;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: #585A5C;
+  }
+
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 24px auto;
+    background: #fff;
+    box-shadow: 0 2px 14px rgba(0,0,0,.35);
+    display: flex;
+    flex-direction: column;
+    padding: 18mm 16mm 0 16mm;
+    position: relative;
+  }
+
+  /* ---------- Header ---------- */
+  .logo-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 14mm;
+  }
+  .logo-row svg { height: 56px; width: auto; }
+
+  .address-block {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12mm;
+  }
+  .customer p, .issuer p { line-height: 1.65; }
+  .issuer { width: 64mm; }
+  .issuer .cvr { display: flex; justify-content: space-between; }
+
+  /* ---------- Document meta ---------- */
+  .doc-meta {
+    margin-left: auto;
+    width: 64mm;
+    margin-bottom: 16mm;
+  }
+  .doc-meta h1 {
+    font-size: 19px;
+    margin-bottom: 8mm;
+  }
+  .doc-meta table { width: 100%; border-collapse: collapse; }
+  .doc-meta td { padding: 2px 0; }
+  .doc-meta td:last-child { text-align: left; width: 38%; }
+
+  /* ---------- Order lines ---------- */
+  table.lines {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  table.lines th {
+    text-align: left;
+    border-bottom: 1.5px solid var(--rule);
+    padding: 4px 6px 6px 0;
+    font-size: 14px;
+  }
+  table.lines td { padding: 6px 6px 6px 0; }
+  th.num, td.num { text-align: right; }
+  table.lines tbody tr:last-child td { padding-bottom: 10px; }
+
+  /* ---------- Totals ---------- */
+  table.totals {
+    width: 64%;
+    margin-left: auto;
+    border-collapse: collapse;
+    border-top: 1.5px solid var(--rule);
+  }
+  table.totals td { padding: 6px 6px 6px 0; }
+  table.totals td.num { text-align: right; }
+  table.totals tr.grand td {
+    border-top: 1.5px solid var(--rule);
+    border-bottom: 1.5px solid var(--rule);
+    font-weight: 600;
+  }
+
+  /* ---------- Free text & payment ---------- */
+  .free-text { margin-top: 10mm; line-height: 1.6; white-space: pre-line; }
+
+  .payment {
+    margin-top: auto;
+    border-top: 1px solid var(--rule);
+    padding: 6mm 0 10mm 0;
+    display: flex;
+    justify-content: space-between;
+  }
+  .payment .bank { display: flex; gap: 28mm; }
+  .payment .terms { width: 80mm; line-height: 1.6; }
+
+  /* ---------- Footer band ---------- */
+  .footer-band {
+    background: var(--brand);
+    color: #fff;
+    text-align: center;
+    line-height: 1.6;
+    padding: 5mm 0;
+    margin: 0 -16mm;
+    font-size: 13px;
+  }
+
+  /* ---------- Print button (screen only) ---------- */
+  .no-print {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+  }
+  .no-print button {
+    background: var(--brand);
+    color: #fff;
+    border: 0;
+    padding: 10px 18px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 1px 6px rgba(0,0,0,.3);
+  }
+  .no-print button:hover { background: #174f68; }
+
+  @media print {
+    body { background: #fff; }
+    .page { margin: 0; box-shadow: none; width: auto; min-height: 0; }
+    .no-print { display: none; }
+    .footer-band {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      margin: 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="no-print">
+  <button onclick="window.print()">Udskriv / Gem som PDF</button>
+</div>
+
+<div class="page">
+
+  <div class="logo-row">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 96">
+      <path d="M14 10 H78 V52 C78 72 46 86 46 86 C46 86 14 72 14 52 Z" fill="#1B5E7B"/>
+      <path d="M32 24 H44 V58 H64 V70 H32 Z" fill="#FFFFFF"/>
+      <rect x="52" y="24" width="12" height="12" fill="#7FB8CB"/>
+      <text x="100" y="56" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif"
+            font-size="44" font-weight="700" letter-spacing="6" fill="#6E7378">LNE</text>
+      <text x="100" y="82" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif"
+            font-size="19" font-weight="600" letter-spacing="10.5" fill="#1B5E7B">SECURITY</text>
+    </svg>
+  </div>
+
+  <div class="address-block">
+    <div class="customer">
+      <p>Sænkeslagskibs kunde</p>
+      <p>Nede på havnen 23</p>
+      <p>2100 København Ø</p>
+      <p>Att.: Jens Hansen</p>
+    </div>
+    <div class="issuer">
+      <p class="cvr"><span>CVR-nr</span><span>12345678</span></p>
+      <p>LNE Security A/S</p>
+      <p>Østre Havnegade 12, 9000 Aalborg</p>
+    </div>
+  </div>
+
+  <div class="doc-meta">
+    <h1>Proformafaktura</h1>
+    <table>
+      <tr><td>Ordrenummer</td><td>401</td></tr>
+      <tr><td>Konto</td><td>12341234</td></tr>
+      <tr><td>Dato</td><td>21-01-2026</td></tr>
+      <tr><td>Forfaldsdato</td><td>29-01-2026</td></tr>
+    </table>
+  </div>
+
+  <table class="lines">
+    <thead>
+      <tr>
+        <th style="width:12%">Vare</th>
+        <th>Tekst</th>
+        <th class="num" style="width:9%">Antal</th>
+        <th style="width:10%; padding-left:10px">Enhed</th>
+        <th class="num" style="width:16%">Salgspris</th>
+        <th class="num" style="width:16%">I alt</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+<tr><td>10-203</td><td>Firewall licens (årlig)</td><td class="num">1</td><td style="padding-left:10px">Stk</td><td class="num">100,00</td><td class="num">100,00</td></tr>
+<tr><td>10-202</td><td>Netværksaudit</td><td class="num">1</td><td style="padding-left:10px">Stk</td><td class="num">800,00</td><td class="num">800,00</td></tr>
+<tr><td>10-201</td><td>Konsulenttimer, sikkerhed</td><td class="num">4</td><td style="padding-left:10px">Timer</td><td class="num">280,00</td><td class="num">1.120,00</td></tr>
+
+    </tbody>
+  </table>
+
+  <table class="totals">
+    <tr><td>Nettobeløb (DKK)</td><td></td><td class="num">2.020,00</td></tr>
+    <tr><td>Moms</td><td class="num">(25%)</td><td class="num">505,00</td></tr>
+    <tr class="grand"><td>Totalbeløb (DKK)</td><td></td><td class="num">2.525,00</td></tr>
+  </table>
+
+  <p class="free-text">Vi holder ferielukket i ugerne 28, 29 og 30.
+Kan I have en rigtig god sommer!</p>
+
+  <div class="payment">
+    <div class="bank">
+      <span>Bankkonto</span>
+      <span>1234-99999999</span>
+    </div>
+    <div class="terms">Betaling bedes overført til ovenstående konto senest på forfaldsdatoen.
+Angiv venligst ordrenummer 401 ved betaling.</div>
+  </div>
+
+  <div class="footer-band">
+    LNE Security A/S<br>
+    Østre Havnegade 12 &middot; 9000 Aalborg<br>
+    Tlf. nr. 98 12 34 56 &middot; CVR nr. 12345678
+  </div>
+
+</div>
+
+</body>
+</html>

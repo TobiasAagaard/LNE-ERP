@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 96" width="420" height="96">
+  <!-- LNE Security brand mark: shield with negative-space "L" -->
+  <g>
+    <path d="M14 10 H78 V52 C78 72 46 86 46 86 C46 86 14 72 14 52 Z"
+          fill="#1B5E7B"/>
+    <!-- negative-space L -->
+    <path d="M32 24 H44 V58 H64 V70 H32 Z" fill="#FFFFFF"/>
+    <!-- accent notch (lock slot) -->
+    <rect x="52" y="24" width="12" height="12" fill="#7FB8CB"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="100" y="56"
+        font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+        font-size="44" font-weight="700" letter-spacing="6"
+        fill="#6E7378">LNE</text>
+  <text x="100" y="82"
+        font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+        font-size="19" font-weight="600" letter-spacing="10.5"
+        fill="#1B5E7B">SECURITY</text>
+</svg>
