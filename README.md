@@ -1,4 +1,4 @@
-# LNE — ERP for LNE Security A/S
+# LNE — ERP
 The current implementation is a command-line app (`LNE.Cli`) built in C# / .NET 10, covering company, product, customer, and sales-order management.
 
 ## Repository structure
