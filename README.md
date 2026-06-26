@@ -1,7 +1,4 @@
 # LNE — ERP for LNE Security A/S
-
-An ERP system for **LNE Security A/S**, a fictional Danish IT-services company based in Aalborg. The repository is structured as a solution that can grow beyond the current CLI to include an API and a web frontend.
-
 The current implementation is a command-line app (`LNE.Cli`) built in C# / .NET 10, covering company, product, customer, and sales-order management.
 
 ## Repository structure
@@ -13,7 +10,6 @@ ERP-CLI/
 ├── .github/workflows/       # CI (build/test)
 └── src/
     ├── LNE.Cli/             # Console ERP app (Views / Models / Data + SQL migrations)
-    │   └── README.md        # Detailed setup, architecture, and usage
     └── LNE.Test/            # xUnit unit tests
 ```
 
