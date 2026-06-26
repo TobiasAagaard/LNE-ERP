@@ -38,7 +38,7 @@ docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<Your@Password123>" \
   -p 1433:1433 --name erp-sql -d mcr.microsoft.com/mssql/server:2022-latest
 ```
 
-**3. Create `appsettings.Local.json`** in the root of `ERP-CLI/` (git-ignored):
+**3. Create `appsettings.Local.json`** in `ERP-CLI/src/LNE.Cli/` (git-ignored):
 
 ```json
 {
@@ -54,10 +54,10 @@ docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<Your@Password123>" \
 **4. Build and run**
 
 ```bash
-dotnet build
-dotnet run
+dotnet build LNE.slnx
+dotnet run --project src/LNE.Cli/LNE.Cli.csproj
 ```
-> **Note:** On startup, the app automatically creates the `ERP_CLI` database (if it doesn’t exist) and runs the migrations from [`Migrations/`](Migrations/) to set up the schema.
+> **Note:** On startup, the app automatically creates the `ERP_CLI` database (if it doesn’t exist) and runs the migrations from [`src/LNE.Cli/Migrations/`](src/LNE.Cli/Migrations/) to set up the schema.
 
 ## Architecture
 
