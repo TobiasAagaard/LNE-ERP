@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <RootNamespace>ERP_CLI.Tests</RootNamespace>
+    <RootNamespace>LNE.Test</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ERP-CLI.csproj" />
+    <ProjectReference Include="..\LNE.Cli\LNE.Cli.csproj" />
   </ItemGroup>
 
 </Project>
