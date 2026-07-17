@@ -5,3 +5,6 @@ bin
 .vscode/
 .env
 appsettings.Local.json
+.env
+.env.*
+!.env.example

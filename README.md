@@ -33,6 +33,28 @@ dotnet run --project LNE.Cli/LNE.Cli.csproj
 dotnet test
 ```
 
+## Docker Postgres setup
+
+The Postgres service in [docker-compose.yml](docker-compose.yml) reads credentials from environment variables.
+
+1. Copy `.env.example` to `.env`.
+2. Adjust values if needed.
+3. Start Postgres:
+
+```bash
+docker compose up -d
+```
+
+Default connection settings from `.env.example`:
+
+- Host: `localhost`
+- Port: `5432`
+- User: `lne_user`
+- Password: `postgres`
+- Database: `lne_db`
+
+For CI/CD (for example GitHub Actions), keep real credentials in GitHub Secrets and inject them as environment variables in workflow steps.
+
 ### TECHCOOL dependency
 
 `LNE.Cli` builds on **TECHCOOL**, the console UI library providing the `Screen` and `Menu` primitives. [`LNE.Cli.csproj`](LNE.Cli/LNE.Cli.csproj) references it conditionally, so no extra setup is required by default:
