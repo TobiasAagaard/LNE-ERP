@@ -3,6 +3,7 @@ bin
 .idea
 .vs/
 .vscode/
+.env
 appsettings.Local.json
 .env
 .env.*
