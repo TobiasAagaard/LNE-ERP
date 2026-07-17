@@ -1,5 +1,6 @@
 <Solution>
-  <Folder Name="/src/" />
-  <Project Path="LNE.Cli/LNE.Cli.csproj" />
-  <Project Path="LNE.Test/LNE.Test.csproj" />
+    <Project Path="LNE.Cli/LNE.Cli.csproj" />
+    <Project Path="LNE.Test/LNE.Test.csproj" />
+    <Project Path="LNE.Api/LNE.Api.csproj" />
+  </Folder>
 </Solution>
