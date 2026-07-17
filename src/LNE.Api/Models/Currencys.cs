@@ -1,6 +1,6 @@
 namespace LNE.Api.Models;
 
-public enum Currency
+public enum Currencys
 {
     DKK,
     EUR,
